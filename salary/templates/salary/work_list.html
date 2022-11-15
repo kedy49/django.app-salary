@@ -1,0 +1,67 @@
+{% extends "salary/base2.html" %}
+{% load mathfilters %}
+{% load humanize %}
+
+{% block main %}
+<h1 class="center"><a href="http://127.0.0.1:8000/salary/list/">{{year}}年{{month}}月勤務記録一覧</a></h1>
+
+<h2 class="center">今月の勤務時間の合計は<span>{{ sum_time_h }}時間{{ sum_time_m }}分</span>です。</h2>
+<h2 class="center">今月の給与合計は<span>{{ sum_wage|floatformat:0 |intcomma }}円</span>です。</h2>
+
+<form action="{% url 'list' %}" method="post">
+    {% csrf_token %}
+    <p class="button">
+    <input type="submit" name="lastyear" value="去年へ" class="btn btn-outline-primary">
+    <input type="submit" name="toyear" value="今年へ" class="btn btn-outline-primary">
+    <input type="submit" name="nextyear" value="来年へ" class="btn btn-outline-primary">
+    </p>
+    <p class="button">
+    <input type="submit" name="lastmonth" value="先月へ" class="btn btn-outline-primary btn-lg">
+    <input type="submit" name="tomonth" value="今月へ" class="btn btn-outline-primary btn-lg">
+    <input type="submit" name="nextmonth" value="来月へ" class="btn btn-outline-primary btn-lg">
+    </p>
+</form>
+
+
+<!-- テーブル表の定義 -->
+<table id=work_list width="100%" class="table table-striped table-bordered table-hover">
+    <!-- 表の列の定義-->
+    <thead>
+        <tr>
+            {% if work %}
+                <th class="text-center">勤務日</th>
+                <th class="text-center">勤務時間</th>
+                <th class="text-center">日当</th>
+                <th class="text-center">詳細・更新・削除</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <!-- ここまでが表の列の定義-->
+
+    <!-- 表のデータ部分の表示-->
+    <tbody>
+        {% for work in work %}
+        <tr class="odd gradeX text-center">
+            <td class="text-center" width="100">{{ work.Worked_date}}</td>
+            {% if not work.Worktime_m_2 %}
+                <td class="text-center" width="100">{{ work.Worktime_h }}時間{{ work.Worktime_m }}分</td>
+            {% else %}
+                <td class="text-center" width="100">{{ work.Worktime_h|addition:work.Worktime_h_2 }}時間{{ work.Worktime_m|addition:work.Worktime_m_2 }}分</td>
+            {% endif %}
+            <td class="text-center" width="100">{{ work.total_wage }}</td>
+            <td class="text-center" width="150">
+                <a class="btn btn-success" href="{% url 'detail' work.id %}" role="button">詳細ページ</a>
+                <a class="btn btn-primary" href="{% url 'update' work.id %}" role="button">更新ページ</a>
+                <a class="btn btn-danger" href="{% url 'delete' work.id %}" role="button">削除ページ</a>
+            </td>
+        </tr>
+        {% empty %}
+            <p>コンテンツがありません。</p>
+        {% endfor %}
+    </tbody>
+    <!-- ここまでが表のデータ部分の表示-->
+
+    </table>
+    <!-- ここまでがテーブル表の定義 -->
+
+{% endblock %}

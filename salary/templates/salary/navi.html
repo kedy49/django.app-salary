@@ -1,0 +1,10 @@
+{% load static %}
+<div class="navbar">
+    <a href="{% url 'top' 1 %}">トップ</a>
+    <a href="{% url 'list' %}">勤務一覧</a>
+    <a href="{% url 'create' %}">新規入力</a>
+    <a href="{% url 'wage_list' %}">時給変更</a>
+    <a href="{% url 'yearwage_list' %}">年収変更</a>
+    <a href="{% url 'zangyo_update' 1 %}">残業手当額変更</a>
+    <a href="{% url 'yukyu_update' 1 %}">有給日数変更</a>
+</div>

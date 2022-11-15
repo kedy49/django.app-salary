@@ -1,0 +1,60 @@
+.navbar {
+    background: rgb(105, 202, 237);
+    height: 40px;
+}
+.navbar2 {
+    height: 60px;
+}
+
+.text{
+    margin-left: 5%;
+    font-size: 200%;
+}
+
+.center{
+    text-align: center;
+}
+
+.center2{
+    text-align: center;
+    margin-top: 50px;
+}
+
+.center3{
+    margin-top: 50px;
+    margin-left: 40%;
+}
+
+.inner1 {
+    position: absolute; /*子要素をabusoluteに*/
+    text-align: center;
+    top: 50%; /*親のtopから50%*/
+    left: 50%; /*親のleftから50%*/
+    transform: translateY(-50%) translateX(-50%); /*子要素自体の大きさを考慮*/
+    margin: 0; /*margin:0を入れる*/
+    padding: 10px 0; /*左右のpaddingを0にする*/
+}
+
+.inner2 {
+    position: absolute; /*子要素をabusoluteに*/
+    text-align: center;
+    top: 35%; /*親のtopから50%*/
+    left: 50%; /*親のleftから50%*/
+    transform: translateY(-50%) translateX(-50%); /*子要素自体の大きさを考慮*/
+    margin: 0; /*margin:0を入れる*/
+    padding: 10px 0; /*左右のpaddingを0にする*/
+}
+
+.space{
+    margin-top: 20%;
+}
+
+.button{
+    display: flex;
+    justify-content: space-evenly;
+}
+
+span{
+    color: rgba(159, 42, 226, 0.68);
+    font-size: 150%;
+}

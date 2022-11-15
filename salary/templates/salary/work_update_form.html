@@ -1,0 +1,31 @@
+{% extends "salary/base2.html" %}
+
+{% block main %}
+<h2>勤務記録更新</h2>
+<form method="post">
+    {% csrf_token %}
+    <p>勤務日：{{ form.Worked_date }}</p>
+    <p>勤務時間:{{ form.Worktime_h }}時間{{ form.Worktime_m }}分</p>
+    <p>時給：{{ form.wage }}</p>   
+    {% if wage_2 > 0 %} 
+    <p>勤務時間:{{ form.Worktime_h_2 }}時間{{ form.Worktime_m_2 }}分</p>
+        <p>時給：{{ form.wage_2 }}</p> 
+    {% endif %}
+    
+    <p>有給：
+        {% if yukyu == 0 %}
+            <select name="form.yukyu">
+                <option value="0">有給未使用</option>
+                <option value="1">有給使用</option>
+            </select>
+        {% else %}
+            <select name="form.yukyu">
+                <option value="1">有給使用</option>
+                <option value="0">有給未使用</option>
+            </select>
+        {% endif %}
+    </p>
+    
+    <input type="submit" value="登録" class="btn btn-primary" />
+</form>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "salary/base2.html" %}
+{% load mathfilters %}
+{% load humanize %}
+
+{% block main %}
+    <script type="text/javascript">
+        function ShowNowYear() {
+        var now = new Date();
+        var year = now.getFullYear();
+        document.write(year);
+    }
+    </script>
+
+    <h2 class="center"><script type="text/javascript">ShowNowYear();</script>年版</h2>
+    <br>
+    <h2 class="center">年収設定</h2>
+    <form>
+        {% for year_wage in year_wage %}
+            {% if id == year_wage.id %}
+                <h1 class="center"><a href="{% url 'top' year_wage.id %}">{{ year_wage.name|intcomma }}円,</a></h1>
+            {% else %}
+                <h3 class="center"><a href="{% url 'top' year_wage.id %}">{{ year_wage.name|intcomma }}円,</a></h3>
+            {% endif %}
+        {% endfor %}
+    </form>
+    <br>
+
+    <table id=time_list width="100%" class="table table-striped table-bordered table-hover">
+        <thead>
+            <tr>
+                <th class="center">今月の勤務時間目安</th>
+                <th class="center">来月の勤務時間目安</th>
+                <th class="center">残りの有給日数</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td class="center"><span>{{ yearwage|sub:sum_wage2|div:wage_avg|div:tomonth|floatformat }}時間</span></td>
+                <td class="center"><span>{{ yearwage|sub:sum_wage1|div:wage_avg|div:nextmonth|floatformat }}時間</span></td>
+                {% if total_yukyu > sum_yukyu %}
+                    <td class="center"><span>{{ total_yukyu|sub:sum_yukyu }}日</span></td>
+                {% else %}
+                    <td class="center">0日</td>
+                {% endif %}
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <h1 class="button">
+        <a class="btn btn-primary btn-lg" href="{% url 'list' %}" role="button">勤務時間確認</a>
+        <a class="btn btn-primary btn-lg" href="{% url 'create' %}" role="button">新規入力</a>
+    </h1>
+
+{% endblock %}
