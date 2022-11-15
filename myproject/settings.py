@@ -177,5 +177,3 @@ LOGGING = {
         }
     }
 }
-
-DISABLE_COLLECTSTATIC: 1
