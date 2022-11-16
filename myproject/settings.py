@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'salary',
     'mathfilters',
     'django.contrib.humanize',
-    'widget_tweaks',
     'django_bootstrap5',
 ]
 
