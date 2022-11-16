@@ -23,3 +23,6 @@ urlpatterns = [
 
     path('updatezangyo/<pk>',views.Updatezangyo.as_view(), name="zangyo_update"),
 ]
+
+# エラー画面表示用
+handler500 = views.my_customized_server_error
