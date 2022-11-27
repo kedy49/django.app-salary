@@ -1,0 +1,40 @@
+{% load static %}
+<!doctype HTML>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="{% static 'main.css' %}">
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <nav class="navbar2 navbar-expand-lg navbar-dark bg-primary">
+            <a class="text navbar-brand" href="{% url 'top' 1 %}">給与管理アプリ</a>
+            <a class="navbar-brand" href="{% url 'index' %}">会員ページ</a>
+        </nav>
+        <div class="container mt-4">
+            <h2 class="center">まずは以下の4つの項目の設定をしてください。</h2>
+            <h3 class="center">（設定の文字をクリックすることで設定操作の画面に変わります。）</h3>
+            <h1>
+                {% if not wage %}
+                    <li class="center"><a href="{% url 'wage_create_first' %}">時給設定</a></li>
+                {% endif %}
+                {% if yearwage == 0 %}
+                    <li class="center"><a href="{% url 'yearwage_create_first' %}">年収設定</a></li>
+                {% endif %}
+                {% if totalyukyu == 0 %}
+                    <li class="center"><a href="{% url 'yukyu_create' %}">有給設定</a></li>
+                {% endif %}
+                {% if zangyo == 0 %}
+                    <li class="center"><a href="{% url 'zangyo_create' %}">残業設定</a></li>
+                {% endif %}
+            </h1>
+
+            <p class="center">※有給がない場合でも0日で設定して下さい。</p>
+            <p class="center">※残業手当がない場合でも0円で設定して下さい。</p>
+            <h2 class="center">全て完了したら下のボタンでホームへ戻って下さい。</h2>
+            <p class="center"><a class="btn btn-primary btn-lg" href="{% url 'top' year_wage_id=1 %}" role="button">ホームへ</a></p>
+        </div>
+    </body>
+</html>

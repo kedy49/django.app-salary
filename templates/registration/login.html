@@ -1,0 +1,15 @@
+{% extends "registration/base.html" %}
+{% block main %}
+<br>
+<h1 class="center">ログイン</h1>
+<br><br>
+<form class="center" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <br>
+    <input type="submit" value="ログイン" class="btn btn-success btn-lg">
+</form>
+<br>
+<p class="center">※パスワードを忘れた場合は<a href="{% url 'password_reset' %}">こちら</a></p>
+<h1 class="center"><a class="btn btn-primary btn-lg" href="{% url 'signup' %}" role="button">サインアップ</a></h1>
+{% endblock %}
