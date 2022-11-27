@@ -17,9 +17,9 @@
     <form>
         {% for year_wage in year_wage %}
             {% if id == year_wage.id %}
-                <h1 class="center"><a href="{% url 'top' year_wage.id %}">{{ year_wage.name|intcomma }}円,</a></h1>
+                <h1 class="center"><a href="{% url 'top' year_wage.id %}">{{ year_wage.name|intcomma }}円</a></h1>
             {% else %}
-                <h3 class="center"><a href="{% url 'top' year_wage.id %}">{{ year_wage.name|intcomma }}円,</a></h3>
+                <h3 class="center"><a href="{% url 'top' year_wage.id %}">{{ year_wage.name|intcomma }}円</a></h3>
             {% endif %}
         {% endfor %}
     </form>
@@ -36,8 +36,18 @@
 
         <tbody>
             <tr>
-                <td class="center"><span>{{ yearwage|sub:sum_wage2|div:wage_avg|div:tomonth|floatformat }}時間</span></td>
-                <td class="center"><span>{{ yearwage|sub:sum_wage1|div:wage_avg|div:nextmonth|floatformat }}時間</span></td>
+                {% if not sum_wage2 %}
+                    <td class="center"><span>{{ yearwage|div:wage_avg_2|div:tomonth|floatformat }}時間</span></td>
+                {% else %}
+                    <td class="center"><span>{{ yearwage|sub:sum_wage2|div:wage_avg|div:tomonth|floatformat }}時間</span></td>
+                {% endif %}
+
+                {% if not wage_avg %}
+                    <td class="center"><span>{{ yearwage|sub:sum_wage1|div:wage_avg_2|div:nextmonth|floatformat }}時間</span></td>
+                {% else %}
+                    <td class="center"><span>{{ yearwage|sub:sum_wage1|div:wage_avg|div:nextmonth|floatformat }}時間</span></td>
+                {% endif %}
+                    
                 {% if total_yukyu > sum_yukyu %}
                     <td class="center"><span>{{ total_yukyu|sub:sum_yukyu }}日</span></td>
                 {% else %}

@@ -1,14 +1,23 @@
 from django.db import models
 from django.urls import reverse_lazy
 import datetime
+from django.contrib.auth import get_user_model
+
+from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
+class User(AbstractUser):
+    class meta:
+        verbose_name = "ユーザー"
+    email = models.EmailField('メールアドレス', unique=True)
+
+    
 class Work(models.Model):
     class meta:
-        verbose_name = "勤務管理"
+        verbose_name = "勤務"
 
     Worked_date = models.DateField(
-        unique =True,
         default = datetime.date.today(),
         verbose_name="勤務日",
     )
@@ -69,6 +78,12 @@ class Work(models.Model):
         verbose_name = "残業時間（分）",
     )
 
+    user = models.ForeignKey(
+        get_user_model(), 
+        verbose_name='ログインユーザー', 
+        on_delete=models.CASCADE,
+    )
+
     def __str__(self):
         return self.Worked_date.strftime("%Y/%m/%d")
 
@@ -85,27 +100,30 @@ class Work(models.Model):
         
 
 class Wage(models.Model):
-    name = models.PositiveIntegerField(
-        unique=True,
-        verbose_name ="時給",
-    )
+    class Meta:
+        verbose_name ="時給"
+    name = models.PositiveIntegerField(default=1000,verbose_name ="時給")
+    user = models.ForeignKey(get_user_model(), verbose_name='ログインユーザー', on_delete=models.CASCADE)
     
 
 
 class Yearwage(models.Model):
-    name = models.PositiveIntegerField(
-        default=1000000,
-        unique=True,
-        verbose_name="年収",
-    )
+    class Meta:
+       verbose_name="年収"
+    name = models.PositiveIntegerField(default=1000000,verbose_name="年収")
+    user = models.ForeignKey(get_user_model(), verbose_name='ログインユーザー', on_delete=models.CASCADE)
 
 
 class total_yukyu(models.Model):
-    name = models.PositiveIntegerField(
-        verbose_name = "有給",
-    )
+    class Meta:
+        verbose_name = "有給"
+    number = models.PositiveIntegerField(default=1)
+    name = models.PositiveIntegerField(verbose_name = "有給")
+    user = models.ForeignKey(get_user_model(), verbose_name='ログインユーザー', on_delete=models.CASCADE)
 
 class Zangyo(models.Model):
-    name = models.PositiveIntegerField(
+    class Meta:
         verbose_name = "残業手当"
-    )
+    number = models.PositiveIntegerField(default=1)
+    name = models.PositiveIntegerField(verbose_name = "残業手当")
+    user = models.ForeignKey(get_user_model(), verbose_name='ログインユーザー', on_delete=models.CASCADE)

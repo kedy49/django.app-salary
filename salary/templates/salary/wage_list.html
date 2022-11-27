@@ -1,11 +1,11 @@
 {% extends "salary/base2.html" %}
+{% load humanize %}
 
 {% block main %}
 <br><br>
 <table id=wage_list width="100%" class="table table-striped table-bordered table-hover">
     <thead>
         <tr>
-            <th class="center">時給説明</th>
             <th class="center">時給</th>
             <th class="center">変更・削除</th>
         </tr>
@@ -14,16 +14,7 @@
     {% for wage in wage %}
     <tbody>
         <tr>
-            {% if wage.id == 1 %}
-                <td class="center" width="200">平日の時給</td>
-                <td  class="center" width="100"><span>{{ wage.name }}円</span></td>
-            {% elif wage.id == 2 %}
-                <td class="center" width="200">休日の時給</td>
-                <td  class="center" width="100"><span>{{ wage.name }}円</span></td>
-            {% else %}
-                <td class="center" width="200">特別時給</td>
-                <td  class="center" width="100"><span>{{ wage.name }}円</span></td>
-            {% endif %}
+            <td  class="center" width="100"><span>{{ wage.name|intcomma }}円</span></td>
             <td class="center" width="150">
                 <a class="btn btn-primary" href="{% url 'wage_update' wage.id %}" role="button">更新ページ</a>
                 <a class="btn btn-danger" href="{% url 'wage_delete' wage.id %}" role="button">削除ページ</a>
@@ -31,7 +22,7 @@
         </tr>
     </tbody>
 {% empty %}
-    <p>コンテンツがありません。</p>
+    <h1 class="center">コンテンツがありません。</h1>
 {% endfor %}
 </table>
 <h3 class="center2"><a class="btn btn-primary btn-lg" href="{% url 'wage_create' %}" role="button">時給の追加登録</a></h3>

@@ -20,3 +20,7 @@ class YukyuAdmin(admin.ModelAdmin):
 @admin.register(models.Zangyo)
 class zangyoAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(models.User)
+class UserAdmin(admin.ModelAdmin):
+    pass
