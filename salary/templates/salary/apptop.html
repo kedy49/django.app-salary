@@ -42,10 +42,14 @@
                     <td class="center"><span>{{ yearwage|sub:sum_wage2|div:wage_avg|div:tomonth|floatformat }}時間</span></td>
                 {% endif %}
 
-                {% if not wage_avg %}
-                    <td class="center"><span>{{ yearwage|sub:sum_wage1|div:wage_avg_2|div:nextmonth|floatformat }}時間</span></td>
+                {% if nextmonth == 0 %}
+                    <td class="center"><span>{{ yearwage|div:wage_avg|div:12|floatformat }}時間</span></td>
                 {% else %}
-                    <td class="center"><span>{{ yearwage|sub:sum_wage1|div:wage_avg|div:nextmonth|floatformat }}時間</span></td>
+                    {% if not wage_avg %}
+                        <td class="center"><span>{{ yearwage|sub:sum_wage1|div:wage_avg_2|div:nextmonth|floatformat }}時間</span></td>
+                    {% else %}
+                        <td class="center"><span>{{ yearwage|sub:sum_wage1|div:wage_avg|div:nextmonth|floatformat }}時間</span></td>
+                    {% endif %}
                 {% endif %}
                     
                 {% if total_yukyu > sum_yukyu %}
