@@ -54,7 +54,7 @@
     justify-content: space-evenly;
 }
 
-span{
+.important{
     color: rgba(159, 42, 226, 0.68);
     font-size: 150%;
 }

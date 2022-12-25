@@ -16,11 +16,11 @@
         {% include "salary/navi.html" %}
         <div class="container mt-4">
             <!-- メッセージ表示 -->
-            {% if messages %}
-                {% for message in messages %}
-                    <p> {{ message }}</p>
-                {% endfor %}
-            {% endif %}
+            {% for message in messages %}
+            <div {% if message.tags %}class="{{ message.tags }}"{% endif %}>
+                {{ message }}
+            </div>
+            {% endfor %}
             
             {% block main %}
             <p>※コンテンツがありません。</p>

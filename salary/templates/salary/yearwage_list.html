@@ -14,7 +14,7 @@
         {% for yearwage in yearwage %}
         <tbody>
             <tr>
-                <td class="center"><span> {{ yearwage.name|intcomma }}円</span></td>
+                <td class="center"><span class="important"> {{ yearwage.name|intcomma }}円</span></td>
                 <td class="center">
                     <a class="btn btn-primary" href="{% url 'yearwage_update' yearwage.id %}" role="button">更新ページ</a>
                     <a class="btn btn-danger" href="{% url 'yearwage_delete' yearwage.id %}" role="button">削除ページ</a>

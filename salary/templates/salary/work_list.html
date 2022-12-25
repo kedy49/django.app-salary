@@ -3,10 +3,10 @@
 {% load humanize %}
 
 {% block main %}
-<h1 class="center"><a href="http://127.0.0.1:8000/salary/list/">{{year}}年{{month}}月勤務記録一覧</a></h1>
+<h1 class="center">{{year}}年{{month}}月勤務記録一覧</h1>
 
-<h2 class="center">今月の勤務時間の合計は<span>{{ sum_time_h }}時間{{ sum_time_m }}分</span>です。</h2>
-<h2 class="center">今月の給与合計は<span>{{ sum_wage|floatformat:0 |intcomma }}円</span>です。</h2>
+<h2 class="center">今月の勤務時間の合計は<span class="important">{{ sum_time_h }}時間{{ sum_time_m }}分</span>です。</h2>
+<h2 class="center">今月の給与合計は<span class="important">{{ sum_wage|floatformat:0 |intcomma }}円</span>です。</h2>
 
 <form action="{% url 'list' %}" method="post">
     {% csrf_token %}
@@ -20,6 +20,7 @@
     <input type="submit" name="tomonth" value="今月へ" class="btn btn-outline-primary btn-lg">
     <input type="submit" name="nextmonth" value="来月へ" class="btn btn-outline-primary btn-lg">
     </p>
+    <input type="hidden" name="month_data" value="{{ month }}">
 </form>
 
 

@@ -62,7 +62,6 @@ def apptop_template(request,year_wage_id):
     if Wage.objects.filter(user_id=request.user.id).exists():
         pass
     else:
-        wage=0
         l=0
     
     if Yearwage.objects.filter(user_id=request.user.id).exists():
@@ -115,9 +114,13 @@ def List(request):
     global i, j
     if request.method == "POST":
         if "lastmonth" in request.POST:
-                i = i - 1
+            if(request.POST['month_data']=="1"):
+                j = j - 1
+            i = i - 1
         elif "nextmonth" in request.POST:
-                i = i + 1
+            if(request.POST['month_data']=="12"):
+                j = j + 1
+            i = i + 1
         elif "tomonth" in request.POST:
             i = 0
 
@@ -192,6 +195,9 @@ class Creatework(CreateView):
         qryset = form.save(commit=False)
         qryset.user=self.request.user
         qryset.save()
+        messages.add_message(self.request, messages.SUCCESS, "登録が完了しました！")
+        messages.add_message(self.request, messages.WARNING, "入力にエラーがあります！！")
+        messages.add_message(self.request, messages.ERROR, "入力にエラーがあります！！")
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -245,6 +251,8 @@ class Createwage(CreateView):
         qryset.user=self.request.user
         qryset.number=int(Wage.objects.filter(user_id=self.request.user.id).aggregate(Count('id')).get("id__count"))+1
         qryset.save()
+        messages.add_message(self.request, messages.SUCCESS, "登録が完了しました！")
+        messages.add_message(self.request, messages.ERROR, "入力にエラーがあります！！")
         return super().form_valid(form)
 
 # 時給の初期設定用
@@ -265,6 +273,13 @@ class Createyearwage(Createwage):
     model = Yearwage
     template_name = "salary/yearwage_form.html"
     success_url= reverse_lazy('yearwage_list')
+    def form_valid(self, form):
+        qryset = form.save(commit=False)
+        qryset.user=self.request.user
+        qryset.save()
+        messages.add_message(self.request, messages.SUCCESS, "登録が完了しました！")
+        messages.add_message(self.request, messages.ERROR, "入力にエラーがあります！！")
+        return super().form_valid(form)
 
 # 年収の初期設定用
 class FirstCreateyearwage(Createyearwage):
@@ -291,6 +306,8 @@ class Createyukyu(CreateView):
         qryset = form.save(commit=False)
         qryset.user=self.request.user
         qryset.save()
+        messages.add_message(self.request, messages.SUCCESS, "登録が完了しました！")
+        messages.add_message(self.request, messages.ERROR, "入力にエラーがあります！！")
         return super().form_valid(form)
 
 def Updateyukyu(request):
@@ -314,6 +331,8 @@ class Createzangyo(CreateView):
         qryset = form.save(commit=False)
         qryset.user=self.request.user
         qryset.save()
+        messages.add_message(self.request, messages.SUCCESS, "登録が完了しました！")
+        messages.add_message(self.request, messages.ERROR, "入力にエラーがあります！！")
         return super().form_valid(form)
 
 def Updatezangyo(request):
