@@ -14,9 +14,6 @@ class User(AbstractUser):
 
     
 class Work(models.Model):
-    class meta:
-        verbose_name = "勤務"
-
     Worked_date = models.DateField(
         default = datetime.date.today(),
         verbose_name="勤務日",
@@ -83,6 +80,16 @@ class Work(models.Model):
         verbose_name='ログインユーザー', 
         on_delete=models.CASCADE,
     )
+    
+    class meta:
+        verbose_name = "勤務"
+        
+        constraints = [
+            models.UniqueConstraint(
+                fields=["Worked_date", "user",],
+                name="work_unique"
+            )
+        ]
 
     def __str__(self):
         return self.Worked_date.strftime("%Y/%m/%d")

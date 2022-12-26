@@ -196,8 +196,6 @@ class Creatework(CreateView):
         qryset.user=self.request.user
         qryset.save()
         messages.add_message(self.request, messages.SUCCESS, "登録が完了しました！")
-        messages.add_message(self.request, messages.WARNING, "入力にエラーがあります！！")
-        messages.add_message(self.request, messages.ERROR, "入力にエラーがあります！！")
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -252,7 +250,6 @@ class Createwage(CreateView):
         qryset.number=int(Wage.objects.filter(user_id=self.request.user.id).aggregate(Count('id')).get("id__count"))+1
         qryset.save()
         messages.add_message(self.request, messages.SUCCESS, "登録が完了しました！")
-        messages.add_message(self.request, messages.ERROR, "入力にエラーがあります！！")
         return super().form_valid(form)
 
 # 時給の初期設定用
@@ -278,7 +275,6 @@ class Createyearwage(Createwage):
         qryset.user=self.request.user
         qryset.save()
         messages.add_message(self.request, messages.SUCCESS, "登録が完了しました！")
-        messages.add_message(self.request, messages.ERROR, "入力にエラーがあります！！")
         return super().form_valid(form)
 
 # 年収の初期設定用
@@ -307,7 +303,6 @@ class Createyukyu(CreateView):
         qryset.user=self.request.user
         qryset.save()
         messages.add_message(self.request, messages.SUCCESS, "登録が完了しました！")
-        messages.add_message(self.request, messages.ERROR, "入力にエラーがあります！！")
         return super().form_valid(form)
 
 def Updateyukyu(request):
@@ -332,7 +327,6 @@ class Createzangyo(CreateView):
         qryset.user=self.request.user
         qryset.save()
         messages.add_message(self.request, messages.SUCCESS, "登録が完了しました！")
-        messages.add_message(self.request, messages.ERROR, "入力にエラーがあります！！")
         return super().form_valid(form)
 
 def Updatezangyo(request):
