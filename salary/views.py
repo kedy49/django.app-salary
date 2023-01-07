@@ -21,7 +21,7 @@ def apptop_template(request,year_wage_id):
     work2_2 = Work.objects.filter(Q(Worked_date__year = date.today().year,Worked_date__month__lt = date.today().month),Q(zangyo_m__isnull=False,user_id=request.user.id)|Q(zangyo_h__isnull=False))
     
     if Zangyo.objects.filter(user_id=request.user.id).exists():
-        zangyo = Zangyo.objects.filter(user_id=request.user.id)
+        zangyo = int(Zangyo.objects.get(user_id=request.user.id).name)
     else:
         zangyo = 0
         l=0
@@ -83,7 +83,7 @@ def apptop_template(request,year_wage_id):
     sum_yukyu = Work.objects.filter(Worked_date__year = date.today().year,user_id=request.user.id).aggregate(Sum("yukyu"))
     day = date.today() + relativedelta(months=-1)
     wage_avg = Work.objects.filter(Worked_date__year = day.year,Worked_date__month = day.month,user_id=request.user.id).aggregate(Avg("wage"))
-    wage_avg_2 = Work.objects.filter(Worked_date__year = day.year,Worked_date__month = date.today().month,user_id=request.user.id).aggregate(Avg("wage"))
+    wage_avg_2 = Work.objects.filter(Worked_date__year = date.today().year,Worked_date__month = date.today().month,user_id=request.user.id).aggregate(Avg("wage"))
     month = int(date.today().month)
     if l == 0:
         return render(request,"salary/setting.html",{"wage":Wage.objects.filter(user_id=request.user.id),"yearwage":yearwage,"totalyukyu":Total_yukyu,"zangyo":zangyo})
@@ -157,7 +157,7 @@ def List(request):
     elif not work3:
         sum_wage = work.aggregate(Sum("total_wage")).get("total_wage__sum")
     else:
-        zangyo = int(Zangyo.objects.get(ID="1").name)
+        zangyo = int(Zangyo.objects.get(user_id=request.user.id).name)
         zangyo_h = int(work3.aggregate(Sum("zangyo_h")).get("zangyo_h__sum"))
         zangyo_m = int(work4.aggregate(Sum("zangyo_m")).get("zangyo_m__sum"))
         sum_wage = int(work.aggregate(Sum("total_wage")).get("total_wage__sum"))+zangyo*zangyo_h+zangyo*zangyo_m/60
@@ -198,6 +198,10 @@ class Creatework(CreateView):
         messages.add_message(self.request, messages.SUCCESS, "登録が完了しました！")
         return super().form_valid(form)
 
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, "入力にエラーがあります！！")
+        return super().form_invalid(form)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         extra = {
@@ -209,14 +213,15 @@ class Creatework(CreateView):
         return context
 
 class Updatework(UpdateView):
-    model = Work    
+    model = Work
     template_name = "salary/work_update_form.html"
-    fields = ["Worked_date","Worktime_h","Worktime_m","Worktime_h_2","Worktime_m_2","wage","wage_2","yukyu","zangyo_h","zangyo_m"]
+    fields = ["Worktime_h","Worktime_m","wage","yukyu","Worktime_h_2","Worktime_m_2","wage_2","zangyo_h","zangyo_m"]
+    success_url = reverse_lazy('list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         work = Work.objects.get(id=self.kwargs['pk']) # pkを指定してデータを絞り込む
-        extra = {"wage_2":work.wage_2,"yukyu" :work.yukyu}
+        extra = {"work":work}
         context.update(extra)
         return context
 

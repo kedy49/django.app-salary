@@ -38,18 +38,18 @@
             <tr>
                 {% if not sum_wage2 %}
                     <td class="center"><span class="important">{{ yearwage|div:wage_avg_2|div:tomonth|floatformat }}時間</span></td>
-                {% else %}
+                    {% else %}
                     <td class="center"><span class="important">{{ yearwage|sub:sum_wage2|div:wage_avg|div:tomonth|floatformat }}時間</span></td>
-                {% endif %}
+                    {% endif %}
 
                 {% if nextmonth == 0 %}
                     <td class="center"><span class="important">{{ yearwage|div:wage_avg|div:12|floatformat }}時間</span></td>
-                {% else %}
+                    {% else %}
                     {% if not wage_avg %}
                         <td class="center"><span class="important">{{ yearwage|sub:sum_wage1|div:wage_avg_2|div:nextmonth|floatformat }}時間</span></td>
-                    {% else %}
+                        {% else %}
                         <td class="center"><span class="important">{{ yearwage|sub:sum_wage1|div:wage_avg|div:nextmonth|floatformat }}時間</span></td>
-                    {% endif %}
+                        {% endif %}
                 {% endif %}
                     
                 {% if total_yukyu > sum_yukyu %}

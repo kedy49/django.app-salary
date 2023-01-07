@@ -13,6 +13,12 @@
             <a class="text navbar-brand" href="{% url 'top' 1 %}">給与管理アプリ</a>
             <a class="navbar-brand" href="{% url 'index' %}">会員ページ</a>
         </nav>
+        <!-- メッセージ表示 -->
+        {% for message in messages %}
+        <div {% if message.tags %}class="{{ message.tags }}"{% endif %}>
+            {{ message }}
+        </div>
+        {% endfor %}
         <div class="container mt-4">
             <h2 class="center">まずは以下の4つの項目の設定をしてください。</h2>
             <h3 class="center">（設定の文字をクリックすることで設定操作の画面に変わります。）</h3>

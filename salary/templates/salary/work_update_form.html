@@ -2,30 +2,71 @@
 
 {% block main %}
 <h2>勤務記録更新</h2>
+<br><br>
 <form method="post">
+    <h2>勤務日：{{work.Worked_date}}</h2><br>
     {% csrf_token %}
-    <p>勤務日：{{ form.Worked_date }}</p>
-    <p>勤務時間:{{ form.Worktime_h }}時間{{ form.Worktime_m }}分</p>
-    <p>時給：{{ form.wage }}</p>   
-    {% if wage_2 > 0 %} 
-    <p>勤務時間:{{ form.Worktime_h_2 }}時間{{ form.Worktime_m_2 }}分</p>
-        <p>時給：{{ form.wage_2 }}</p> 
+    {{form.as_p}}
+    <!-- <p>
+        <label for="id_Worktime">勤務時間:</label>
+        <input type="number" name="Worktime_h" value="{{ work.Worktime_h}}" min="0" required id ="id_Worktime">時間
+        <input type="number" name="Worktime_m" value="{{ work.Worktime_m}}" min="0" required id ="id_Worktime">分
+    </p>
+    <p>
+        <label for="id_wage">時給:</label>
+        <input type="number" name="wage" value="{{ work.wage}}" min="0" required id ="id_wage">円
+    </p>
+    {% if work.wage_2 > 0 %} 
+        <p style="color: blue;">途中で時給が変更した場合が以下です。</p>
+        <p>
+            <label for="id_Worktime2">勤務時間:</label>
+            <input type="number" name="Worktime_h_2" value="{{ work.Worktime_h_2 }}" min="0" required id ="id_Worktime2">時間
+            <input type="number" name="Worktime_m_2" value="{{ work.Worktime_m_2 }}" min="0" required id ="id_Worktime2">分
+        </p>
+        <p>
+            <label for="id_wage2">時給:</label>
+            <input type="number" name="wage" value="{{ work.wage2 }}" min="0" required id ="id_wage2">円
+        </p>
+    {% else %}
+        <p>
+            <label for="id_Worktime2"></label>
+            <input type="hidden" name="Worktime_h_2" value="{{ work.Worktime_h_2 }}" min="0" required id ="id_Worktime2">
+            <input type="hidden" name="Worktime_m_2" value="{{ work.Worktime_m_2 }}" min="0" required id ="id_Worktime2">
+        </p>
+        <p>
+            <label for="id_wage2"></label>
+            <input type="hidden" name="wage" value="{{ work.wage2 }}" min="0" required id ="id_wage2">
+        </p>
     {% endif %}
-    
+    <br>
+    {% if work.zangyo_m >= 0 %}
+        <p>
+            <label for="id_zangyo">残業時間:</label>
+            <input type="number" name="zangyo_h" value="{{ work.zangyo_h }}" min="0" required id ="id_zangyo">時間
+            <input type="number" name="zangyo_m" value="{{ work.zangyo_m }}" min="0" required id ="id_zangyo">分
+        </p>
+    {% else %}
+        <p>
+            <label for="id_zangyo"></label>
+            <input type="hidden" name="zangyo_h" value="{{ work.zangyo_h }}" min="0" required id ="id_zangyo">
+            <input type="hidden" name="zangyo_m" value="{{ work.zangyo_m }}" min="0" required id ="id_zangyo">
+        </p>
+    {% endif %}
+    <br>
     <p>有給：
-        {% if yukyu == 0 %}
-            <select name="form.yukyu">
-                <option value="0">有給未使用</option>
-                <option value="1">有給使用</option>
+        {% if work.yukyu %}
+            <select name="work.yukyu">
+                <option value="True">有給使用</option>
+                <option value="False">有給未使用</option>
             </select>
         {% else %}
-            <select name="form.yukyu">
-                <option value="1">有給使用</option>
-                <option value="0">有給未使用</option>
+            <select name="work.yukyu">
+                <option value="False">有給未使用</option>
+                <option value="True">有給使用</option>
             </select>
         {% endif %}
     </p>
-    
+    <br>-->
     <input type="submit" value="登録" class="btn btn-primary" />
 </form>
 {% endblock %}

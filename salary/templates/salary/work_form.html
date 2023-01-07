@@ -8,12 +8,13 @@
 
     {% block main %}
 
-        <h2>新規入力</h2>
+        <h2 style="color: blue;">新規入力</h2>
+        <br>
         <form method="post">
             {% csrf_token %}
             <p>勤務日：<input type="date" name="Worked_date"></p>
-            <p>勤務時間：<input type="number" name="Worktime_h">時間<input type="number" name="Worktime_m">分</p>
-            <p>※残業がある場合も勤務時間に残業分の時間を含めてください。</p>
+            <p>勤務時間：<input type="number" name="Worktime_h" placeholder="半角数字で入力">時間<input type="number" placeholder="半角数字で入力" name="Worktime_m">分</p>
+            <p style="color: rgb(19, 100, 223);">※残業がある場合も勤務時間に残業分の時間を含めてください。</p>
             <p>
                 時給：
                 <select name="wage">
@@ -27,28 +28,28 @@
             <p>
                 有給：
                 <select name="yukyu">
-                    <option value="0">有給未使用</option>
+                    <option value="False">有給未使用</option>
                     {% if total_yukyu > sum_yukyu %}
-                        <option value="1">有給使用</option>
+                        <option value="True">有給使用</option>
                     {% endif %}
                 </select>
             </p>
             <hr>
-            <p>残業があった場合は以下に入力して下さい。残業手当分を計算します。</p>
-            <p>残業時間：<input type="number" name="zangyo_h">時間<input type="number" name="zangyo_m">分</p>
+            <p style="color: rgb(19, 100, 223);">残業があった場合は以下に入力して下さい。残業手当分を計算します。</p>
+            <p>残業時間：<input type="number" name="zangyo_h" placeholder="半角数字で入力">時間<input type="number" name="zangyo_m" placeholder="半角数字で入力">分</p>
             <hr>
-            <p>途中で時給が変わる場合は以下に入力してください。</p>
-            <p>勤務時間：<input type="number" name="Worktime_h_2">時間<input type="number" name="Worktime_m_2">分</p>
+            <p style="color: rgb(19, 100, 223);">途中で時給が変わる場合は以下に入力してください。</p>
+            <p>勤務時間：<input type="number" name="Worktime_h_2" placeholder="半角数字で入力">時間<input type="number" name="Worktime_m_2" placeholder="半角数字で入力">分</p>
             <p>
                 時給：
                 <select name="wage_2">
                     <option value="" selected hidden>選択してください</option>
                     {% for hourly_wage in hourly_wage %}
-                    <option value="{{hourly_wage.name}}">{{hourly_wage.name}}</option>
+                        <option value="{{hourly_wage.name}}">{{hourly_wage.name}}</option>
                     {% endfor %}
                 </select>
             </p>
-
+            <br>
             <input type="submit" value="入力" class="btn btn-primary" />
         </form>
 
