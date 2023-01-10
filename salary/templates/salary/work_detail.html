@@ -4,13 +4,6 @@
 {% load l10n %}
 
 {% block main %}
-<!-- メッセージ表示
-{% for message in messages %}
-<div {% if message.tags %}class="{{ message.tags }}"{% endif %}>
-    {{ message }}
-</div>
-{% endfor %} -->
-
 <h2 class="center2"><a href="{% url 'list' %}">勤務記録一覧</a></h2>
 <br>
 
@@ -44,25 +37,26 @@
                 <td class="text-center" width="220">{{ work.Worktime_h_2 }}時間{{ work.Worktime_m_2 }}分</td>
                 <td class="text-center" width="200">{{ work.wage_2 }}円</td>
             {% endif %}
-            <td class="text-center" width="100">{{ work.total_wage }}円</td>
             <!-- 残業について -->
-            {% if work.zangyo_m %}
-                {% if not work.zangyo_h %}
+            {% if work.zangyo_m > 0 %}
+                {% if work.zangyo_h > 0 %}
+                    <td class="text-center" width="100">{{ work.zangyo_m|div:60|add:work.zangyo_h|mul:zangyo|add:work.total_wage }}円</td>
+                    <td class="text-center" width="100">{{ work.zangyo_h }}時間{{ work.zangyo_m }}分</td>
+                {% else %}
+                    <td class="text-center" width="100">{{ work.zangyo_m|mul:zangyo|div:60|add:work.total_wage }}円</td>
                     <td class="text-center" width="100">0時間{{ work.zangyo_m }}分</td>
-                {% else %}
-                    <td class="text-center" width="100">{{ work.zangyo_h }}時間{{ work.zangyo_m }}分</td>
-                {% endif %}
-                <td class="text-center" width="100">{{ zangyo }}円</td>
-            {% elif work.zangyo_h %}
-                {% if not work.zangyo_m %}
-                    <td class="text-center" width="100">{{ work.zangyo_h }}時間0分</td>
-                {% else %}
-                    <td class="text-center" width="100">{{ work.zangyo_h }}時間{{ work.zangyo_m }}分</td>
                 {% endif %}
                 <td class="text-center" width="100">{{ zangyo }}円</td>
             {% else %}
-                <td class="text-center" width="100">残業なし</td>
-                <td class="text-center" width="100">残業なし</td>
+                {% if work.zangyo_h > 0 %}
+                    <td class="text-center" width="100">{{ work.zangyo_h|mul:zangyo|add:work.total_wage }}円</td>
+                    <td class="text-center" width="100">{{ work.zangyo_h }}時間0分</td>
+                    <td class="text-center" width="100">{{ zangyo }}円</td>
+                {% else %}
+                    <td class="text-center" width="100">{{ work.total_wage }}円</td>
+                    <td class="text-center" width="100">残業なし</td>
+                    <td class="text-center" width="100">残業なし</td>
+                {% endif %}
             {% endif %}
             <!-- 有給について -->
             {% if work.yukyu == 1 %}

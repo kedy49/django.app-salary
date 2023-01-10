@@ -45,11 +45,33 @@
         <tr class="odd gradeX text-center">
             <td class="text-center" width="100">{{ work.Worked_date}}</td>
             {% if not work.Worktime_m_2 %}
-                <td class="text-center" width="100">{{ work.Worktime_h }}時間{{ work.Worktime_m }}分</td>
+                {% if not work.Worktime_h_2 %}
+                    <td class="text-center" width="100">{{ work.Worktime_h }}時間{{ work.Worktime_m }}分</td>
+                {% else %}
+                    <td class="text-center" width="100">{{ work.Worktime_h|addition:work.Worktime_h_2 }}時間{{ work.Worktime_m }}分</td>
+                {% endif %}
             {% else %}
-                <td class="text-center" width="100">{{ work.Worktime_h|addition:work.Worktime_h_2 }}時間{{ work.Worktime_m|addition:work.Worktime_m_2 }}分</td>
+                {% if not work.Worktime_h_2 %}
+                    <td class="text-center" width="100">{{ work.Worktime_h }}時間{{ work.Worktime_m|addition:work.Worktime_m_2 }}分</td>
+                {% else %}
+                    <td class="text-center" width="100">{{ work.Worktime_h|addition:work.Worktime_h_2 }}時間{{ work.Worktime_m|addition:work.Worktime_m_2 }}分</td>
+                {% endif %}
             {% endif %}
-            <td class="text-center" width="100">{{ work.total_wage }}</td>
+            <!-- 日当計算 -->
+            {% if work.zangyo_m > 0 %}
+                {% if work.zangyo_h > 0 %}
+                    <td class="text-center" width="100">{{ work.zangyo_m|div:60|add:work.zangyo_h|mul:zangyo|add:work.total_wage }}円</td>
+                {% else %}
+                    <td class="text-center" width="100">{{ work.zangyo_m|mul:zangyo|div:60|add:work.total_wage }}円</td>
+                {% endif %}
+            {% else %}
+                {% if work.zangyo_h > 0 %}
+                    <td class="text-center" width="100">{{ work.zangyo_h|mul:zangyo|add:work.total_wage }}円</td>
+                {% else %}
+                    <td class="text-center" width="100">{{ work.total_wage }}円</td>
+                {% endif %}
+            {% endif %}
+
             <td class="text-center" width="150">
                 <a class="btn btn-success" href="{% url 'detail' work.id %}" role="button">詳細ページ</a>
                 <a class="btn btn-primary" href="{% url 'update' work.id %}" role="button">更新ページ</a>

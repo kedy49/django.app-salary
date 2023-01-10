@@ -96,14 +96,15 @@ class Work(models.Model):
         return self.Worked_date.strftime("%Y/%m/%d")
 
     def save(self,*args,**kwargs):
+        wage_sum = self.Worktime_h*self.wage+self.Worktime_m*self.wage/60
         if not self.wage_2:
-            self.total_wage = self.Worktime_h*self.wage+self.Worktime_m*self.wage/60
+            self.total_wage = wage_sum
         else:
             if self.Worktime_h_2 == None:
                 self.Worktime_h_2 = 0
             if self.Worktime_m_2 == None:
                 self.Worktime_m_2 = 0
-            self.total_wage = self.Worktime_h*self.wage+self.Worktime_m*self.wage/60+self.Worktime_h_2*self.wage_2+self.Worktime_m_2*self.wage_2/60
+            self.total_wage = wage_sum+self.Worktime_h_2*self.wage_2+self.Worktime_m_2*self.wage_2/60
         super().save(*args,**kwargs)
         
 

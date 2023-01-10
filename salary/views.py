@@ -1,14 +1,15 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy, reverse
 from salary.models import Work, Yearwage, Wage, total_yukyu, Zangyo
 from datetime import date
 from django.db.models import Sum, Min, Avg, Count, Q
 from dateutil.relativedelta import relativedelta
-from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from .forms import SignUpForm, ZangyoForm, YukyuForm
 import math
+from django.utils.translation import gettext as _
+from django.core.exceptions import ValidationError
 
 l=1
 
@@ -33,22 +34,36 @@ def apptop_template(request,year_wage_id):
         sum_wage2_2 = int(work2.aggregate(Sum("total_wage")).get("total_wage__sum"))
     else:
         sum_wage2_2 = 0
+
+    # 残業時間の整理
     if work1_2.all().exists():
-        zangyo_h_1 = int(work1_2.aggregate(Sum("zangyo_h")).get("zangyo_h__sum"))
+        re_zangyo_h = work1_2.aggregate(Sum("zangyo_h")).get("zangyo_h__sum")
+        re_zangyo_m = work1_2.aggregate(Sum("zangyo_m")).get("zangyo_m__sum")
+        if re_zangyo_h:
+            zangyo_h_1 = int(re_zangyo_h)
+        else:
+            zangyo_h_1 =0
+        if re_zangyo_m:
+            zangyo_m_1 = int(re_zangyo_m)
+        else:
+            zangyo_m_1 =0
     else:
         zangyo_h_1 = 0
-    if work1_2.all().exists():
-        zangyo_m_1 = int(work1_2.aggregate(Sum("zangyo_h")).get("zangyo_h__sum"))
-    else:
-        zangyo_m_1 = 0
+        zangyo_m_1 =0
     if work2_2.all().exists():
-        zangyo_h_2 = int(work2_2.aggregate(Sum("zangyo_h")).get("zangyo_h__sum"))
+        re_zangyo_h = work2_2.aggregate(Sum("zangyo_h")).get("zangyo_h__sum")
+        re_zangyo_m = work2_2.aggregate(Sum("zangyo_m")).get("zangyo_m__sum")
+        if re_zangyo_h:
+            zangyo_h_2 = int(re_zangyo_h)
+        else:
+            zangyo_h_2 =0
+        if re_zangyo_m:
+            zangyo_m_2 = int(re_zangyo_m)
+        else:
+            zangyo_m_2 =0
     else:
         zangyo_h_2 = 0
-    if work2_2.all().exists():
-        zangyo_m_2 = int(work2_2.aggregate(Sum("zangyo_h")).get("zangyo_h__sum"))
-    else:
-        zangyo_m_2 = 0
+        zangyo_m_2 =0
 
     if not work1_2:
         sum_wage1 = sum_wage1_2
@@ -123,6 +138,7 @@ def List(request):
             i = i + 1
         elif "tomonth" in request.POST:
             i = 0
+            j = 0
 
         if "lastyear" in request.POST:
             j = j - 1
@@ -157,10 +173,10 @@ def List(request):
     elif not work3:
         sum_wage = work.aggregate(Sum("total_wage")).get("total_wage__sum")
     else:
-        zangyo = int(Zangyo.objects.get(user_id=request.user.id).name)
+        zangyo = Zangyo.objects.get(user_id=request.user.id).name
         zangyo_h = int(work3.aggregate(Sum("zangyo_h")).get("zangyo_h__sum"))
         zangyo_m = int(work4.aggregate(Sum("zangyo_m")).get("zangyo_m__sum"))
-        sum_wage = int(work.aggregate(Sum("total_wage")).get("total_wage__sum"))+zangyo*zangyo_h+zangyo*zangyo_m/60
+        sum_wage = work.aggregate(Sum("total_wage")).get("total_wage__sum")+zangyo*zangyo_h+zangyo*zangyo_m/60
 
     return render(
         request, 
@@ -172,6 +188,7 @@ def List(request):
             'sum_wage':sum_wage,
             'month':month.month,
             'year':year.year,
+            'zangyo':zangyo,
         }
     )
 
@@ -211,6 +228,18 @@ class Creatework(CreateView):
         }
         context.update(extra)
         return context
+    
+    def clean_Wage(self):
+        wage = self.cleaned_data.get("Wage")
+        if not wage:
+            self.add_error('wage', '時給を選択して下さい。')
+            raise ValidationError("時給を選択して下さい。")
+        return wage
+
+    # def post(self,request,*args,**kwargs):
+    #     form = WorkForm(request.POST)
+    #     return render(request,'salary/work_form.html',{'form':form})
+
 
 class Updatework(UpdateView):
     model = Work
@@ -362,3 +391,11 @@ class SignUpView(CreateView):
     form_class = SignUpForm
     success_url = reverse_lazy('login')
     template_name = 'registration/signup.html'
+
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, "登録が完了しました！")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, "入力にエラーがあります！！")
+        return super().form_invalid(form)

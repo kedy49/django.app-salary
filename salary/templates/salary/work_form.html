@@ -13,8 +13,26 @@
         <form method="post">
             {% csrf_token %}
             <p>勤務日：<input type="date" name="Worked_date"></p>
-            <p>勤務時間：<input type="number" name="Worktime_h" placeholder="半角数字で入力">時間<input type="number" placeholder="半角数字で入力" name="Worktime_m">分</p>
+            <!-- エラーメッセージ設定 -->
+            {% if form.errors %}
+            <ul>
+                {% for error in form.Worked_date.errors %}
+                <li style="color: red;">{{ error }}</li>
+                {% endfor %}
+            </ul><br>
+            {% endif %}
+
             <p style="color: rgb(19, 100, 223);">※残業がある場合も勤務時間に残業分の時間を含めてください。</p>
+            <p>勤務時間：<input type="number" name="Worktime_h" placeholder="半角数字で入力">時間<input type="number" placeholder="半角数字で入力" name="Worktime_m">分</p>
+            <!-- エラーメッセージ設定 -->
+            {% if form.errors %}
+            <ul>
+                {% for error in form.Worktime_h.errors %}
+                <li style="color: red;">{{ error }}</li>
+                {% endfor %}
+            </ul><br>
+            {% endif %}
+
             <p>
                 時給：
                 <select name="wage">
@@ -24,6 +42,14 @@
                     {% endfor %}
                 </select>
             </p>
+            <!-- エラーメッセージ設定 -->
+            {% if form.errors %}
+            <ul>
+                {% for error in form.wage.errors %}
+                <li style="color: red;">{{ error }}</li>
+                {% endfor %}
+            </ul><br>
+            {% endif %}
             
             <p>
                 有給：

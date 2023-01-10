@@ -13,6 +13,12 @@
             <a class="text navbar-brand" href="{% url 'login' %}">給与管理アプリ</a>
         </nav>
         <div class="container mt-4">
+        <!-- メッセージ表示 -->
+        {% for message in messages %}
+        <div {% if message.tags %}class="{{ message.tags }}"{% endif %}>
+            {{ message }}
+        </div>
+        {% endfor %}
         {% block main %}
         <p>※コンテンツがありません。</p>
         {% endblock %}
