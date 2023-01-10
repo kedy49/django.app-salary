@@ -168,12 +168,12 @@ def List(request):
         sum_time_h = sum_time_h + sum_time_m/60
         sum_time_m = sum_time_m%60
 
+    zangyo = Zangyo.objects.get(user_id=request.user.id).name
     if not work:
         sum_wage=0
     elif not work3:
         sum_wage = work.aggregate(Sum("total_wage")).get("total_wage__sum")
     else:
-        zangyo = Zangyo.objects.get(user_id=request.user.id).name
         zangyo_h = int(work3.aggregate(Sum("zangyo_h")).get("zangyo_h__sum"))
         zangyo_m = int(work4.aggregate(Sum("zangyo_m")).get("zangyo_m__sum"))
         sum_wage = work.aggregate(Sum("total_wage")).get("total_wage__sum")+zangyo*zangyo_h+zangyo*zangyo_m/60
