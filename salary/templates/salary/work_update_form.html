@@ -1,72 +1,124 @@
 {% extends "salary/base2.html" %}
 
 {% block main %}
-<h2>勤務記録更新</h2>
-<br><br>
-<form method="post">
-    <h2>勤務日：{{work.Worked_date}}</h2><br>
-    {% csrf_token %}
-    {{form.as_p}}
-    <!-- <p>
-        <label for="id_Worktime">勤務時間:</label>
-        <input type="number" name="Worktime_h" value="{{ work.Worktime_h}}" min="0" required id ="id_Worktime">時間
-        <input type="number" name="Worktime_m" value="{{ work.Worktime_m}}" min="0" required id ="id_Worktime">分
-    </p>
-    <p>
-        <label for="id_wage">時給:</label>
-        <input type="number" name="wage" value="{{ work.wage}}" min="0" required id ="id_wage">円
-    </p>
-    {% if work.wage_2 > 0 %} 
-        <p style="color: blue;">途中で時給が変更した場合が以下です。</p>
-        <p>
-            <label for="id_Worktime2">勤務時間:</label>
-            <input type="number" name="Worktime_h_2" value="{{ work.Worktime_h_2 }}" min="0" required id ="id_Worktime2">時間
-            <input type="number" name="Worktime_m_2" value="{{ work.Worktime_m_2 }}" min="0" required id ="id_Worktime2">分
-        </p>
-        <p>
-            <label for="id_wage2">時給:</label>
-            <input type="number" name="wage" value="{{ work.wage2 }}" min="0" required id ="id_wage2">円
-        </p>
-    {% else %}
-        <p>
-            <label for="id_Worktime2"></label>
-            <input type="hidden" name="Worktime_h_2" value="{{ work.Worktime_h_2 }}" min="0" required id ="id_Worktime2">
-            <input type="hidden" name="Worktime_m_2" value="{{ work.Worktime_m_2 }}" min="0" required id ="id_Worktime2">
-        </p>
-        <p>
-            <label for="id_wage2"></label>
-            <input type="hidden" name="wage" value="{{ work.wage2 }}" min="0" required id ="id_wage2">
-        </p>
-    {% endif %}
-    <br>
-    {% if work.zangyo_m >= 0 %}
-        <p>
-            <label for="id_zangyo">残業時間:</label>
-            <input type="number" name="zangyo_h" value="{{ work.zangyo_h }}" min="0" required id ="id_zangyo">時間
-            <input type="number" name="zangyo_m" value="{{ work.zangyo_m }}" min="0" required id ="id_zangyo">分
-        </p>
-    {% else %}
-        <p>
-            <label for="id_zangyo"></label>
-            <input type="hidden" name="zangyo_h" value="{{ work.zangyo_h }}" min="0" required id ="id_zangyo">
-            <input type="hidden" name="zangyo_m" value="{{ work.zangyo_m }}" min="0" required id ="id_zangyo">
-        </p>
-    {% endif %}
-    <br>
-    <p>有給：
-        {% if work.yukyu %}
-            <select name="work.yukyu">
-                <option value="True">有給使用</option>
-                <option value="False">有給未使用</option>
-            </select>
-        {% else %}
-            <select name="work.yukyu">
-                <option value="False">有給未使用</option>
-                <option value="True">有給使用</option>
-            </select>
+    <div style="width: 70%; margin-left: 15%;">
+        <h2 style="text-align: center;">新規入力</h2>
+        <br>
+        <form method="post">
+            <h2>勤務日：{{work.Worked_date}}</h2><br>
+            {% csrf_token %}
+            <!-- エラーメッセージ設定 -->
+            {% if form.errors %}
+            <ul>
+                {% for error in form.Worked_date.errors %}
+                <li style="color: red;">{{ error }}</li>
+                {% endfor %}
+            </ul><br>
+            {% endif %}
+
+            <p style="color: rgb(223, 19, 90);">※残業がある場合も勤務時間に残業分の時間を含めてください。</p>
+            <p>勤務時間：<input value="{{work.Worktime_h}}" type="number" name="Worktime_h" placeholder="半角数字で入力" style="width: 41%;">時間<input value="{{work.Worktime_m}}" type="number" placeholder="半角数字で入力" name="Worktime_m" style="width: 41%;">分</p><br>
+            <!-- エラーメッセージ設定 -->
+            {% if form.errors %}
+            <ul>
+                {% for error in form.Worktime_h.errors %}
+                <li style="color: red;">{{ error }}</li>
+                {% endfor %}
+            </ul><br>
+            {% endif %}
+            <p>
+                時給：
+                <select name="wage" style="width: 100%;">
+                    <option value="{{work.wage}}">{{work.wage}}</option>
+                    {% for hourly_wage in hourly_wage %}
+                        {% if hourly_wage.name != work.wage %}
+                            <option value="{{hourly_wage.name}}">{{hourly_wage.name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </p><br>
+            <!-- エラーメッセージ設定 -->
+            {% if form.errors %}
+            <ul>
+                {% for error in form.wage.errors %}
+                <li style="color: red;">{{ error }}</li>
+                {% endfor %}
+            </ul><br>
+            {% endif %}
+            
+            <p>
+                有給：
+                <select name="yukyu" style="width: 100%;">
+                    {% if work.yukyu %}
+                        <option value="True">有給使用</option>
+                        <option value="False">有給未使用</option>
+                    {% else %}
+                        <option value="False">有給未使用</option>
+                        {% if total_yukyu > sum_yukyu %}
+                            <option value="True">有給使用</option>
+                        {% endif %}
+                    {% endif %}
+                </select>
+            </p>
+            <hr>
+            {% if not work.zangyo_h and not work.zangyo_m %}
+                <p style="color: rgb(19, 100, 223);"><a onclick="clickBtn1()">残業があった場合はこちらをクリックして下さい。</a></p>
+            {% endif %}
+            <p id="hide1">残業時間：<input value="{{work.zangyo_h}}" type="number" name="zangyo_h" placeholder="半角数字で入力" style="width: 41%;">時間<input value="{{work.zangyo_m}}" type="number" name="zangyo_m" placeholder="半角数字で入力" style="width: 41%;">分</p>
+            <hr>
+            {% if not work.wage_2 %}
+                <p style="color: rgb(19, 100, 223);"><a onclick="clickBtn2()">途中で時給が変わる場合はこちらをクリックして下さい。</a></p>
+            {% endif %}
+            <p id="hide2">
+                勤務時間：<input value="{{work.Worktime_h_2}}" type="number" name="Worktime_h_2" placeholder="半角数字で入力" style="width: 41%;">時間<input value="{{work.Worktime_m_2}}" type="number" name="Worktime_m_2" placeholder="半角数字で入力" style="width: 41%;">分<br><br>
+                時給：
+                <select name="wage_2" style="width: 100%;">
+                    {% if not work.wage_2 %}
+                        <option value="">選択してください</option>
+                    {% else %}
+                    <option value="{{work.wage_2}}">{{work.wage_2}}</option>
+                    {% endif %}
+                    {% for hourly_wage in hourly_wage %}
+                        {% if hourly_wage.name != work.wage_2 %}
+                            <option value="{{hourly_wage.name}}">{{hourly_wage.name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </p>
+            <br>
+            <input style="margin-left: 40%; width: 20%;" type="submit" value="入力の登録" class="btn btn-primary" />
+        </form>
+
+        {% if not work.zangyo_h and not work.zangyo_m %}
+            <script>document.getElementById("hide1").style.display ="none";</script>
         {% endif %}
-    </p>
-    <br>-->
-    <input type="submit" value="登録" class="btn btn-primary" />
-</form>
+        {% if not work.wage_2 %}
+            <script>document.getElementById("hide2").style.display ="none";</script>
+        {% endif %}
+        <script>
+            function clickBtn1(){
+                var p1 = document.getElementById("hide1");
+            
+                if(p1.style.display=="block"){
+                    // noneで非表示
+                    p1.style.display ="none";
+                }else{
+                    // blockで表示
+                    p1.style.display ="block";
+                }
+            }
+
+            function clickBtn2(){
+                var p1 = document.getElementById("hide2");
+            
+                if(p1.style.display=="block"){
+                    // noneで非表示
+                    p1.style.display ="none";
+                }else{
+                    // blockで表示
+                    p1.style.display ="block";
+                }
+            }
+            </script>
+    </div>
 {% endblock %}

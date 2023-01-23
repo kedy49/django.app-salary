@@ -250,11 +250,6 @@ class Creatework(CreateView):
             raise ValidationError("時給を選択して下さい。")
         return wage
 
-    # def post(self,request,*args,**kwargs):
-    #     form = WorkForm(request.POST)
-    #     return render(request,'salary/work_form.html',{'form':form})
-
-
 class Updatework(UpdateView):
     model = Work
     template_name = "salary/work_update_form.html"
@@ -264,7 +259,12 @@ class Updatework(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         work = Work.objects.get(id=self.kwargs['pk']) # pkを指定してデータを絞り込む
-        extra = {"work":work}
+        extra = {
+            "work":work,
+            "hourly_wage":Wage.objects.filter(user_id=self.request.user.id),
+            "sum_yukyu":Work.objects.filter(Worked_date__year = date.today().year,user_id=self.request.user.id).aggregate(Sum("yukyu")).get("yukyu__sum"),
+            "total_yukyu":total_yukyu.objects.filter(user_id=self.request.user.id).get(number=1).name,
+        }
         context.update(extra)
         return context
 

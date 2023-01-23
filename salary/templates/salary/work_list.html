@@ -44,7 +44,11 @@
     <tbody>
         {% for work in work %}
         <tr class="odd gradeX text-center">
-            <td class="text-center" width="100">{{ work.Worked_date}}</td>
+            {% if work.yukyu %}
+                <td class="text-center" width="100"><p style="color: red; margin: 0;">有給！！</p>{{ work.Worked_date}}</td>
+            {% else %}
+                <td class="text-center" width="100">{{ work.Worked_date}}</td>
+            {% endif %}
             {% if not work.Worktime_m_2 %}
                 {% if not work.Worktime_h_2 %}
                     <td class="text-center" width="100">{{ work.Worktime_h }}時間{{ work.Worktime_m }}分</td>
