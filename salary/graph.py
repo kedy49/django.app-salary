@@ -24,8 +24,7 @@ def Plot_PieChart(p,l):
     # 円グラフを描画。デフォルトは3時の方向から開始
     # autopoctで比率を表示するようにしている。小数点第一位まで表示するときはautopct='%.1f%%'。
     # counterclock=Falseで時計回りに、startangle=90で12時の方向から開始、radiusで半径を変更(2で2倍？)
-    plt.pie(p, autopct='%.1f%%', labels = l, colors = c, counterclock=False, startangle=90, radius=0.8, center=(0, 0))
-    plt.title('給与状況', fontsize=15)
+    plt.pie(p, autopct='%.1f%%', colors = c, counterclock=False, startangle=90, radius=1.4, center=(0, 0))
     
     graph = Output_Graph()
     return graph

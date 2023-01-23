@@ -26,8 +26,21 @@
                 {% endfor %}
             </form>
         </div>
-        <!-- 円グラフ -->
-        <img src="data:image/png;base64,{{ chart| safe }}" onerror="this.style.display='none'"/>
+        <div style="display:flex; flex-flow: column;">
+            <!-- 円グラフ -->
+            <h2 style="text-align: center; height: 40px; margin-top: 20px; margin-bottom: 0;">給与状況</h2>
+            <img style="height: 80%;" src="data:image/png;base64,{{ chart| safe }}" onerror="this.style.display='none'"/>
+        </div>
+        <div style="width: 25%; margin-left: 10px;">
+            <div style="margin-top: 60%; display: flex;">
+                <div style="width: 25px; height: 25px; background-color: violet; border: 4px black;"></div>
+                <h5>：今までの合計給与</h5>
+            </div>
+            <div style="display: flex;">
+                <div style="width: 25px; height: 25px; background-color: pink; border: 4px black;"></div>
+                <h5>：予定年収までの残り</h5>
+            </div>
+        </div>
     </div>
 
     <table id=time_list width="100%" class="table table-striped table-bordered table-hover" style="width: 90%; margin-left: 5%; margin-top: 0;">
