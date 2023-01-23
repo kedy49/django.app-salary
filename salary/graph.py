@@ -16,7 +16,7 @@ def Output_Graph():
 
 def Plot_PieChart(p,l):
     # 日本語を表示する設定
-    plt.rcParams['font.family'] = 'Yu Gothic'
+    plt.rcParams['font.family'] = 'Ms Gothic'
     # 円グラフの色の設定。順番に適用されていき、最後まで到達したら最初に戻って同じ色が適用される。
     c = ['violet',"pink"]
     plt.switch_backend("AGG")

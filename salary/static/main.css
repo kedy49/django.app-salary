@@ -58,24 +58,3 @@ span{
     color: rgba(159, 42, 226, 0.68);
     font-size: 150%;
 }
-
-/* 横並び */
-.flex1 {
-    display: flex; /*横並び*/
-    background-color: aqua;
-}
-.flex1 .image {
-    width: 50%; /*画像サイズ指定*/
-    margin: 0;
-    padding: 0;
-}
-.flex1 .image img {
-    width: 100%;
-    height: auto;
-    background-color: rebeccapurple;
-}
-.flex1 .text2 {
-    margin: 0 0 0 20px;
-    padding: 0;
-    width: 50%;
-}
