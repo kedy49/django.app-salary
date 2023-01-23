@@ -3,3 +3,4 @@ whitenoise
 gunicorn
 django-mathfilters
 python-dateutil
+matplotlib.pyplot
