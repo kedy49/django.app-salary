@@ -10,6 +10,7 @@ from .forms import SignUpForm, ZangyoForm, YukyuForm
 import math
 from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
+from . import graph
 
 l=1
 
@@ -100,6 +101,18 @@ def apptop_template(request,year_wage_id):
     wage_avg = Work.objects.filter(Worked_date__year = day.year,Worked_date__month = day.month,user_id=request.user.id).aggregate(Avg("wage"))
     wage_avg_2 = Work.objects.filter(Worked_date__year = date.today().year,Worked_date__month = date.today().month,user_id=request.user.id).aggregate(Avg("wage"))
     month = int(date.today().month)
+    year_wage = Yearwage.objects.filter(user_id=request.user.id)
+
+    if year_wage.get(id=year_wage_id).name-sum_wage1>=0:
+        # 円グラフ設定
+        pie = [sum_wage1, year_wage.get(id=year_wage_id).name-sum_wage1]
+        # Plot_Piechart関数の「l」に渡す配列（円グラフのラベル）
+        label = ["累計給与","残り"]
+    else:
+        pie = [sum_wage1]
+        label = ["累計給与"]
+    chart = graph.Plot_PieChart(pie, label)
+
     if l == 0:
         return render(request,"salary/setting.html",{"wage":Wage.objects.filter(user_id=request.user.id),"yearwage":yearwage,"totalyukyu":Total_yukyu,"zangyo":zangyo})
     else:
@@ -116,9 +129,10 @@ def apptop_template(request,year_wage_id):
                 'yearwage':yearwage,
                 'sum_yukyu':sum_yukyu.get("yukyu__sum"),
                 'total_yukyu':Total_yukyu,
-                'year_wage':Yearwage.objects.filter(user_id=request.user.id),
+                'year_wage':year_wage,
                 'zangyo':zangyo,
-                'id':year_wage_id
+                'id':year_wage_id,
+                'chart':chart,
             }
         )
 

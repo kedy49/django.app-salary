@@ -7,12 +7,12 @@
 {% else %}
 
     {% block main %}
-
-        <h2 style="color: blue;">新規入力</h2>
+    <div style="width: 70%; margin-left: 15%;">
+        <h2 style="text-align: center;">新規入力</h2>
         <br>
         <form method="post">
             {% csrf_token %}
-            <p>勤務日：<input type="date" name="Worked_date"></p>
+            <p>勤務日：<input type="date" name="Worked_date" style="width: 100%;"></p><br>
             <!-- エラーメッセージ設定 -->
             {% if form.errors %}
             <ul>
@@ -22,8 +22,8 @@
             </ul><br>
             {% endif %}
 
-            <p style="color: rgb(19, 100, 223);">※残業がある場合も勤務時間に残業分の時間を含めてください。</p>
-            <p>勤務時間：<input type="number" name="Worktime_h" placeholder="半角数字で入力">時間<input type="number" placeholder="半角数字で入力" name="Worktime_m">分</p>
+            <p style="color: rgb(223, 19, 90);">※残業がある場合も勤務時間に残業分の時間を含めてください。</p>
+            <p>勤務時間：<input type="number" name="Worktime_h" placeholder="半角数字で入力" style="width: 41%;">時間<input type="number" placeholder="半角数字で入力" name="Worktime_m" style="width: 41%;">分</p><br>
             <!-- エラーメッセージ設定 -->
             {% if form.errors %}
             <ul>
@@ -35,13 +35,13 @@
 
             <p>
                 時給：
-                <select name="wage">
+                <select name="wage" style="width: 100%;">
                     <option value="" selected hidden>選択してください</option>
                     {% for hourly_wage in hourly_wage %}
                     <option value="{{hourly_wage.name}}">{{hourly_wage.name}}</option>
                     {% endfor %}
                 </select>
-            </p>
+            </p><br>
             <!-- エラーメッセージ設定 -->
             {% if form.errors %}
             <ul>
@@ -53,7 +53,7 @@
             
             <p>
                 有給：
-                <select name="yukyu">
+                <select name="yukyu" style="width: 100%;">
                     <option value="False">有給未使用</option>
                     {% if total_yukyu > sum_yukyu %}
                         <option value="True">有給使用</option>
@@ -61,24 +61,54 @@
                 </select>
             </p>
             <hr>
-            <p style="color: rgb(19, 100, 223);">残業があった場合は以下に入力して下さい。残業手当分を計算します。</p>
-            <p>残業時間：<input type="number" name="zangyo_h" placeholder="半角数字で入力">時間<input type="number" name="zangyo_m" placeholder="半角数字で入力">分</p>
+            <p style="color: rgb(19, 100, 223);"><a onclick="clickBtn1()">残業があった場合はこちらをクリックして下さい。</a></p>
+            <p id="hide1">残業時間：<input type="number" name="zangyo_h" placeholder="半角数字で入力" style="width: 41%;">時間<input type="number" name="zangyo_m" placeholder="半角数字で入力" style="width: 41%;">分</p>
             <hr>
-            <p style="color: rgb(19, 100, 223);">途中で時給が変わる場合は以下に入力してください。</p>
-            <p>勤務時間：<input type="number" name="Worktime_h_2" placeholder="半角数字で入力">時間<input type="number" name="Worktime_m_2" placeholder="半角数字で入力">分</p>
-            <p>
+            <p style="color: rgb(19, 100, 223);"><a onclick="clickBtn2()">途中で時給が変わる場合はこちらをクリックして下さい。</a></p>
+            <p id="hide2">
+                勤務時間：<input type="number" name="Worktime_h_2" placeholder="半角数字で入力" style="width: 41%;">時間<input type="number" name="Worktime_m_2" placeholder="半角数字で入力" style="width: 41%;">分<br><br>
                 時給：
-                <select name="wage_2">
+                <select name="wage_2" style="width: 100%;">
                     <option value="" selected hidden>選択してください</option>
                     {% for hourly_wage in hourly_wage %}
-                        <option value="{{hourly_wage.name}}">{{hourly_wage.name}}</option>
+                        <option value="{{hourly_wage.name}}">{{hourly_wage.name}}円</option>
                     {% endfor %}
                 </select>
             </p>
             <br>
-            <input type="submit" value="入力" class="btn btn-primary" />
+            <input style="margin-left: 40%; width: 20%;" type="submit" value="入力の登録" class="btn btn-primary" />
         </form>
 
+        <script>
+            //初期表示は非表示
+            document.getElementById("hide1").style.display ="none";
+            document.getElementById("hide2").style.display ="none";
+
+            function clickBtn1(){
+                var p1 = document.getElementById("hide1");
+            
+                if(p1.style.display=="block"){
+                    // noneで非表示
+                    p1.style.display ="none";
+                }else{
+                    // blockで表示
+                    p1.style.display ="block";
+                }
+            }
+
+            function clickBtn2(){
+                var p1 = document.getElementById("hide2");
+            
+                if(p1.style.display=="block"){
+                    // noneで非表示
+                    p1.style.display ="none";
+                }else{
+                    // blockで表示
+                    p1.style.display ="block";
+                }
+            }
+            </script>
+    </div>
     {% endblock %}
 
-{% endif%}
+{% endif %}

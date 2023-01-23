@@ -113,6 +113,9 @@ class Wage(models.Model):
         verbose_name ="時給"
     name = models.PositiveIntegerField(default=1000,verbose_name ="時給")
     user = models.ForeignKey(get_user_model(), verbose_name='ログインユーザー', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.name)+"円"
     
 
 
@@ -122,6 +125,9 @@ class Yearwage(models.Model):
     name = models.PositiveIntegerField(default=1000000,verbose_name="年収")
     user = models.ForeignKey(get_user_model(), verbose_name='ログインユーザー', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return str(self.name)+"円"
+
 
 class total_yukyu(models.Model):
     class Meta:
@@ -130,9 +136,15 @@ class total_yukyu(models.Model):
     name = models.PositiveIntegerField(verbose_name = "有給")
     user = models.ForeignKey(get_user_model(), verbose_name='ログインユーザー', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return str(self.name)+"日"
+
 class Zangyo(models.Model):
     class Meta:
         verbose_name = "残業手当"
     number = models.PositiveIntegerField(default=1)
     name = models.PositiveIntegerField(verbose_name = "残業手当")
     user = models.ForeignKey(get_user_model(), verbose_name='ログインユーザー', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.name)+"円"

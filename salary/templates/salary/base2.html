@@ -8,10 +8,19 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     </head>
-    <body>
-        <nav class="navbar2 navbar-expand-lg navbar-dark bg-primary">
+    <body style=" background-color: rgb(210, 249, 249);">
+        <nav style="display:flex;" class="navbar2 navbar-expand-lg navbar-dark bg-primary">
             <a class="text navbar-brand" href="{% url 'top' 1 %}">給与管理アプリ</a>
-            <a class="navbar-brand" href="{% url 'index' %}">会員ページ</a>
+            <a class="navbar-brand" style="margin-top: 15px;" href="{% url 'index' %}">会員ページ</a>
+            <!-- <a class="navbar-brand btn" style="height: 40px; justify-content: end; margin-top: 10px; color: blue; background-color: rgb(105, 202, 237);;" onclick="clickBtn3()">メニュー</a>
+            <li id="hide3" style="display:flex; flex-flow: column; background-color: rgb(206, 240, 240);">
+                <a href="{% url 'list' %}" style="color: black;">月ごとの勤務記録</a>
+                <a href="{% url 'list' %}" style="color: black;">月ごとの勤務記録</a>
+                <a href="{% url 'list' %}" style="color: black;">月ごとの勤務記録</a>
+                <a href="{% url 'list' %}" style="color: black;">月ごとの勤務記録</a>
+                <a href="{% url 'list' %}" style="color: black;">月ごとの勤務記録</a>
+                <a href="{% url 'list' %}" style="color: black;">月ごとの勤務記録</a>
+            </li> -->
         </nav>
         {% include "salary/navi.html" %}
         <div class="container mt-4">
@@ -26,5 +35,22 @@
             <p>※コンテンツがありません。</p>
             {% endblock %}
         </div>
+        
     </body>
+    <script>
+        //初期表示は非表示
+        document.getElementById("hide3").style.display ="none";
+
+        function clickBtn3(){
+            var p1 = document.getElementById("hide3");
+        
+            if(p1.style.display=="block"){
+                // noneで非表示
+                p1.style.display ="none";
+            }else{
+                // blockで表示
+                p1.style.display ="block";
+            }
+        }
+        </script>
 </html>
