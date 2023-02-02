@@ -1,0 +1,59 @@
+{% extends "salary/base2.html" %}
+{% load mathfilters %}
+{% load humanize %}
+
+{% block main %}
+<div style="margin-left: 10%; width: 70%;">
+    <h1>{{year}}年{{month}}月勤務記録一覧</h1>
+</div>
+<br>
+<form action="{% url 'data' %}" method="post">
+    {% csrf_token %}
+    <p class="button">
+    <input type="submit" name="lastyear_2" value="去年へ" class="btn btn-outline-dark">
+    <input type="submit" name="toyear_2" value="今年へ" class="btn btn-outline-dark">
+    <input type="submit" name="nextyear_2" value="来年へ" class="btn btn-outline-dark">
+    </p>
+    <p class="button">
+    <input type="submit" name="lastmonth_2" value="先月へ" class="btn btn-outline-dark btn-lg">
+    <input type="submit" name="tomonth_2" value="今月へ" class="btn btn-outline-dark btn-lg">
+    <input type="submit" name="nextmonth_2" value="来月へ" class="btn btn-outline-dark btn-lg">
+    </p>
+    <input type="hidden" name="month_data_2" value="{{ month }}">
+</form>
+<br>
+<div style="display: flex; width: 100%;">
+    <div style="margin-left: 5%; width: 24.95%; text-align: right;">
+        <h4>合計勤務時間：</h4><br>
+        <h4>合計給与：</h4><br>
+        <h4>夕方・土日給与：</h4><br>
+        <h4>残業代：</h4><br>
+        <h4>有給使用日数：</h4>
+    </div>
+    <div style="width: 20%; text-align: left;">
+        <h4>{{total_worktime_h}}時間{{total_worktime_m}}分</h4><br>
+        <h4>{{total_wage|intcomma}}円</h4><br>
+        <h4>{{sum_worktime_m_2|div:60|add:sum_worktime_h_2|mul:wage_2|intcomma}}円</h4><br>
+        <h4>{{sum_zangyo_m|div:60|add:sum_zangyo_h|mul:wage_zangyo|intcomma}}円</h4><br>
+        <h4>{{yukyu}}日</h4>
+    </div>
+    <div style="width: 0.1%; background-color: black;"></div>
+    <div style="width: 24.95%; text-align: right;">
+        <h4>通常勤務時間：</h4>
+        <h4>通常勤務の時給：</h4><br>
+        <h4>夕方・土日勤務時間：</h4>
+        <h4>夕方・土日勤務の時給：</h4><br>
+        <h4>合計残業時間：</h4>
+        <h4>残業の際の時給：</h4>
+    </div>
+    <div style="width: 18%; text-align: left;">
+        <h4>{{sum_worktime_h}}時間{{sum_worktime_m}}分</h4>
+        <h4>{{wage|intcomma}}円</h4><br>
+        <h4>{{sum_worktime_h_2}}時間{{sum_worktime_m_2}}分</h4>
+        <h4>{{wage_2|intcomma}}円</h4><br>
+        <h4>{{sum_zangyo_h}}時間{{sum_zangyo_m}}分</h4>
+        <h4>{{wage_zangyo|intcomma}}円</h4>
+    </div>
+</div>
+
+{% endblock %}

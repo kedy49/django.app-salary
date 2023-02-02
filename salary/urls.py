@@ -13,6 +13,7 @@ urlpatterns = [
 
     path("top/<int:year_wage_id>/", views.apptop_template, name="top"),
     path("list/", views.List, name="list"),
+    path("data/", views.data, name="data"),
     path('detail/<int:work_id>/', views.Detail, name="detail"),
     path('create/', views.Creatework.as_view(), name="create"),
     path('update/<pk>/', views.Updatework.as_view(), name="update"),

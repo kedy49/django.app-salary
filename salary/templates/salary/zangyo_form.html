@@ -1,11 +1,11 @@
 {% extends "salary/base2.html" %}
 
 {% block main %}
-<h2 class="inner2">残業手当設定</h2>
+<h2 class="inner2">残業時給設定</h2>
 <form method="post" class="inner1">
     {% csrf_token %}
-    <h2 class="center">残業手当：<input type="number" name="name">円</h2>
-    <p class="center">※残業手当がない場合は0円で登録して下さい。</p>
+    <h2 class="center">残業時給：<input type="number" name="name">円</h2>
+    <p class="center">※残業の際に時給の変更がない場合は通常の時給で登録して下さい。</p>
     <input type="submit" value="登録" class="btn btn-primary" />
 </form>
 {% endblock %}

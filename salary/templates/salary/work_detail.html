@@ -4,7 +4,7 @@
 {% load l10n %}
 
 {% block main %}
-<h2 class="center2"><a href="{% url 'list' %}">勤務記録一覧</a></h2>
+<h2 class="center2">{{ work.Worked_date}}の勤務記録</h2>
 <br>
 
 <!-- テーブル表の定義 -->
@@ -12,16 +12,9 @@
     <!-- 表の列の定義-->
     <thead>
         <tr>
-            <th class="text-center">勤務日</th>
-            <th class="text-center">勤務時間</th>
-            <th class="text-center">時給</th>
-            {% if work.wage_2 %}
-                <th class="text-center">時給変更後の勤務時間</th>
-                <th class="text-center">時給変更後の時給</th>
-            {% endif %}
+            <th class="text-center">総勤務時間</th>
             <th class="text-center">日当</th>
-            <th class="text-center">残業</th>
-            <th class="text-center">残業手当</th>
+            <th class="text-center">残業の有無</th>
             <th class="text-center">有給</th>
         </tr>
     </thead>
@@ -30,39 +23,68 @@
     <!-- 表のデータ部分の表示-->
     <tbody>
         <tr class="odd gradeX text-center">
-            <td class="text-center" width="150">{{ work.Worked_date}}</td>
-            <td class="text-center" width="100">{{ work.Worktime_h }}時間{{ work.Worktime_m }}分</td>
-            <td class="text-center" width="100">{{ work.wage }}円</td>
-            {% if work.wage_2 %}
-                <td class="text-center" width="220">{{ work.Worktime_h_2 }}時間{{ work.Worktime_m_2 }}分</td>
-                <td class="text-center" width="200">{{ work.wage_2 }}円</td>
-            {% endif %}
+            <td class="text-center" width="30%">{{ work.total_worktime_h }}時間{{ work.total_worktime_m }}分</td>
+            <td class="text-center" width="30%">{{ work.total_wage|intcomma }}円</td>
             <!-- 残業について -->
-            {% if work.zangyo_m > 0 %}
-                {% if work.zangyo_h > 0 %}
-                    <td class="text-center" width="100">{{ work.zangyo_m|div:60|add:work.zangyo_h|mul:zangyo|add:work.total_wage }}円</td>
-                    <td class="text-center" width="100">{{ work.zangyo_h }}時間{{ work.zangyo_m }}分</td>
-                {% else %}
-                    <td class="text-center" width="100">{{ work.zangyo_m|mul:zangyo|div:60|add:work.total_wage }}円</td>
-                    <td class="text-center" width="100">0時間{{ work.zangyo_m }}分</td>
-                {% endif %}
-                <td class="text-center" width="100">{{ zangyo }}円</td>
+            {% if work.zangyo_m or work.zangyo_h %}
+                <td class="text-center" width="20%">残業あり</td>
             {% else %}
-                {% if work.zangyo_h > 0 %}
-                    <td class="text-center" width="100">{{ work.zangyo_h|mul:zangyo|add:work.total_wage }}円</td>
-                    <td class="text-center" width="100">{{ work.zangyo_h }}時間0分</td>
-                    <td class="text-center" width="100">{{ zangyo }}円</td>
-                {% else %}
-                    <td class="text-center" width="100">{{ work.total_wage }}円</td>
-                    <td class="text-center" width="100">残業なし</td>
-                    <td class="text-center" width="100">残業なし</td>
-                {% endif %}
+                <td class="text-center" width="20%">残業なし</td>
             {% endif %}
             <!-- 有給について -->
-            {% if work.yukyu == 1 %}
-                <td class="text-center" width="120">有給使用</td>
+            {% if work.yukyu %}
+                <td class="text-center" width="20%">有給使用</td>
             {% else %}
-                <td class="text-center" width="120">有給未使用</td>
+                <td class="text-center" width="20%">有給未使用</td>
+            {% endif %}
+        </tr>
+    </tbody>
+    <!-- ここまでが表のデータ部分の表示-->
+</table>
+<br><hr><br>
+<h3 class="center">勤務時間の詳細</h3><br>
+<table style="background-color: white;" id=work_detail width="100%" class="table table-striped table-bordered table-hover">
+    <!-- 表の列の定義-->
+    <thead>
+        <tr>
+            <th width="40%"></th>
+            <th class="text-center" width="20%">勤務時間</th>
+            <th class="text-center" width="20%">時給</th>
+            <th class="text-center" width="20%">合計</th>
+        </tr>
+    </thead>
+    <!-- ここまでが表の列の定義-->
+
+    <!-- 表のデータ部分の表示-->
+    <tbody>
+        <tr class="odd gradeX text-center">
+            <th>通常時給の勤務時間</th>
+            <td class="text-center">{{ work.Worktime_h }}時間{{ work.Worktime_m }}分</td>
+            <td class="text-center">{{ work.wage|intcomma }}円</td>
+            <td class="text-center">{{ work.Worktime_m|div:60|add:work.Worktime_h|mul:work.wage|intcomma }}円</td>
+        </tr>
+        <tr class="odd gradeX text-center">
+            <th>時給変更後の勤務時間</th>
+            {% if work.wage_2 %}
+                <td class="text-center">{{ work.Worktime_h_2 }}時間{{ work.Worktime_m_2 }}分</td>
+                <td class="text-center">{{ work.wage_2|intcomma }}円</td>
+                <td class="text-center">{{ work.Worktime_m_2|div:60|add:work.Worktime_h_2|mul:work.wage_2|intcomma }}円</td>
+            {% else %}
+                <td class="text-center">-</td>
+                <td class="text-center">-</td>
+                <td class="text-center">-</td>
+            {% endif %}
+            </tr>
+        <tr class="odd gradeX text-center">
+            <th>残業の詳細</th>
+            {% if work.zangyo_h != 0 and work.zangyo_m != 0 %}
+                <td class="text-center">{{ work.zangyo_h }}時間{{ work.zangyo_m }}分</td>
+                <td class="text-center">{{ work.zangyo_wage|intcomma }}円</td>
+                <td class="text-center">{{ work.zangyo_m|div:60|add:work.zangyo_h|mul:work.zangyo_wage|intcomma }}円</td>
+            {% else %}
+                <td class="text-center">-</td>
+                <td class="text-center">-</td>
+                <td class="text-center">-</td>
             {% endif %}
         </tr>
     </tbody>
@@ -70,7 +92,7 @@
 
     </table>
     <!-- ここまでがテーブル表の定義 -->
-
+<br>
 <p class="center">
     <a class="btn btn-primary" href="{% url 'update' work.id %}" role="button">編集</a>
     <a class="btn btn-danger" href="{% url 'delete' work.id %}" role="button">削除</a>

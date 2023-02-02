@@ -3,7 +3,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormVi
 from django.urls import reverse_lazy, reverse
 from salary.models import Work, Yearwage, Wage, total_yukyu, Zangyo
 from datetime import date
-from django.db.models import Sum, Min, Avg, Count, Q
+from django.db.models import Sum, Min, Max, Avg, Count, Q
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from .forms import SignUpForm, ZangyoForm, YukyuForm
@@ -86,6 +86,16 @@ def apptop_template(request,year_wage_id):
             yearwage = Yearwage.objects.filter(user_id=request.user.id).get(id = num).name
         else:
             yearwage = Yearwage.objects.filter(user_id=request.user.id).get(id = year_wage_id).name
+        
+        if yearwage-sum_wage1>=0:
+            # 円グラフ設定
+            pie = [sum_wage1, yearwage-sum_wage1]
+            # Plot_Piechart関数の「l」に渡す配列（円グラフのラベル）
+            label = ["累計給与","残り"]
+        else:
+            pie = [sum_wage1]
+            label = ["累計給与"]
+        chart = graph.Plot_PieChart(pie, label)
     else:
         yearwage=0
         l=0
@@ -96,22 +106,25 @@ def apptop_template(request,year_wage_id):
         Total_yukyu = 0
         l=0
 
-    sum_yukyu = Work.objects.filter(Worked_date__year = date.today().year,user_id=request.user.id).aggregate(Sum("yukyu"))
     day = date.today() + relativedelta(months=-1)
-    wage_avg = Work.objects.filter(Worked_date__year = day.year,Worked_date__month = day.month,user_id=request.user.id).aggregate(Avg("wage"))
-    wage_avg_2 = Work.objects.filter(Worked_date__year = date.today().year,Worked_date__month = date.today().month,user_id=request.user.id).aggregate(Avg("wage"))
     month = int(date.today().month)
     year_wage = Yearwage.objects.filter(user_id=request.user.id)
 
-    if year_wage.get(id=year_wage_id).name-sum_wage1>=0:
-        # 円グラフ設定
-        pie = [sum_wage1, year_wage.get(id=year_wage_id).name-sum_wage1]
-        # Plot_Piechart関数の「l」に渡す配列（円グラフのラベル）
-        label = ["累計給与","残り"]
+    work_year=Work.objects.filter(Worked_date__year = date.today().year,user_id=request.user.id)
+    if not work_year:
+        sum_yukyu=0
     else:
-        pie = [sum_wage1]
-        label = ["累計給与"]
-    chart = graph.Plot_PieChart(pie, label)
+        sum_yukyu = Work.objects.filter(Worked_date__year = date.today().year,user_id=request.user.id).aggregate(Sum("yukyu")).get("yukyu__sum")
+    
+    if not work_year.filter(Worked_date__month = day.month):
+        wage_avg=Wage.objects.filter(user_id=request.user.id).aggregate(Avg("name")).get("name__avg")
+    else:
+        wage_avg = Work.objects.filter(Worked_date__year = day.year,Worked_date__month = day.month,user_id=request.user.id).aggregate(Avg("wage")).get("wage__avg")
+    
+    if not work_year.filter(Worked_date__month = date.today().month):
+        wage_avg_2=Wage.objects.filter(user_id=request.user.id).aggregate(Avg("name")).get("name__avg")
+    else:
+        wage_avg_2 = Work.objects.filter(Worked_date__year = date.today().year,Worked_date__month = date.today().month,user_id=request.user.id).aggregate(Avg("wage")).get("wage__avg")
 
     if l == 0:
         return render(request,"salary/setting.html",{"wage":Wage.objects.filter(user_id=request.user.id),"yearwage":yearwage,"totalyukyu":Total_yukyu,"zangyo":zangyo})
@@ -122,12 +135,12 @@ def apptop_template(request,year_wage_id):
             {
                 'sum_wage1':sum_wage1,
                 'sum_wage2':sum_wage2,
-                'wage_avg':wage_avg.get("wage__avg"),
-                'wage_avg_2':wage_avg_2.get("wage__avg"),
+                'wage_avg':wage_avg,
+                'wage_avg_2':wage_avg_2,
                 'tomonth':13-month,
                 'nextmonth':12-month,
                 'yearwage':yearwage,
-                'sum_yukyu':sum_yukyu.get("yukyu__sum"),
+                'sum_yukyu':sum_yukyu,
                 'total_yukyu':Total_yukyu,
                 'year_wage':year_wage,
                 'zangyo':zangyo,
@@ -164,45 +177,122 @@ def List(request):
     month = date.today() + relativedelta(months=i)
     year = date.today() + relativedelta(years=j)
     work = Work.objects.filter(Worked_date__year = year.year, Worked_date__month = month.month,user_id=request.user.id)
-    work2 = Work.objects.filter(Worked_date__year = year.year, Worked_date__month = month.month,wage_2__isnull=False,user_id=request.user.id)
-    work3 = Work.objects.filter(Worked_date__year = year.year, Worked_date__month = month.month,zangyo_h__isnull=False,user_id=request.user.id)
-    work4 = Work.objects.filter(Worked_date__year = year.year, Worked_date__month = month.month,zangyo_m__isnull=False,user_id=request.user.id)
-
     if not work:
-        sum_time_h = 0
-        sum_time_m = 0
-    elif not work2:
-        sum_time_h = int(work.aggregate(Sum('Worktime_h')).get("Worktime_h__sum"))
-        sum_time_m = int(work.aggregate(Sum('Worktime_m')).get("Worktime_m__sum"))
+        total_worktime_h = 0
+        total_worktime_m = 0
     else:
-        sum_time_h = int(work.aggregate(Sum('Worktime_h')).get("Worktime_h__sum"))+int(work2.aggregate(Sum('Worktime_h_2')).get("Worktime_h_2__sum"))
-        sum_time_m = int(work.aggregate(Sum('Worktime_m')).get("Worktime_m__sum"))+int(work2.aggregate(Sum('Worktime_m_2')).get("Worktime_m_2__sum"))
+        total_worktime_h = int(work.aggregate(Sum('total_worktime_h')).get("total_worktime_h__sum"))
+        total_worktime_m = int(work.aggregate(Sum('total_worktime_m')).get("total_worktime_m__sum"))
+    if total_worktime_m >= 60:
+        total_worktime_h = total_worktime_h + total_worktime_m/60
+        total_worktime_m = total_worktime_m%60
     
-    if sum_time_m >= 60:
-        sum_time_h = sum_time_h + sum_time_m/60
-        sum_time_m = sum_time_m%60
-
-    zangyo = Zangyo.objects.get(user_id=request.user.id).name
-    if not work:
-        sum_wage=0
-    elif not work3:
-        sum_wage = work.aggregate(Sum("total_wage")).get("total_wage__sum")
-    else:
-        zangyo_h = int(work3.aggregate(Sum("zangyo_h")).get("zangyo_h__sum"))
-        zangyo_m = int(work4.aggregate(Sum("zangyo_m")).get("zangyo_m__sum"))
-        sum_wage = work.aggregate(Sum("total_wage")).get("total_wage__sum")+zangyo*zangyo_h+zangyo*zangyo_m/60
+    total_wage=work.aggregate(Sum('total_wage')).get("total_wage__sum")
+    if not total_wage:
+        total_wage = 0
 
     return render(
         request, 
         'salary/work_list.html', 
         {
             'work':work.order_by('Worked_date'),
-            'sum_time_h':math.floor(sum_time_h),
-            'sum_time_m':sum_time_m,
-            'sum_wage':sum_wage,
+            'total_worktime_h':total_worktime_h,
+            'total_worktime_m':total_worktime_m,
+            'total_wage':total_wage,
             'month':month.month,
             'year':year.year,
-            'zangyo':zangyo,
+        }
+    )
+
+m = 0
+n = 0
+
+def data(request):
+    global m, n
+    if request.method == "POST":
+        if "lastmonth_2" in request.POST:
+            if(request.POST['month_data_2']=="1"):
+                m = m - 1
+            n = n - 1
+        elif "nextmonth_2" in request.POST:
+            if(request.POST['month_data_2']=="12"):
+                m = m + 1
+            n = n + 1
+        elif "tomonth_2" in request.POST:
+            n = 0
+            m = 0
+
+        if "lastyear_2" in request.POST:
+            m = m - 1
+        elif "nextyear_2" in request.POST:
+            m = m + 1
+        elif "toyear_2" in request.POST:
+            m = 0
+
+    month = date.today() + relativedelta(months=n)
+    year = date.today() + relativedelta(years=m)
+    work = Work.objects.filter(Worked_date__year = year.year, Worked_date__month = month.month,user_id=request.user.id)
+    total_wage=work.aggregate(Sum('total_wage')).get("total_wage__sum")
+    if not work:
+        total_worktime_h = 0
+        total_worktime_m = 0
+        total_wage = 0
+    else:
+        total_worktime_h = int(work.aggregate(Sum('total_worktime_h')).get("total_worktime_h__sum"))
+        total_worktime_m = int(work.aggregate(Sum('total_worktime_m')).get("total_worktime_m__sum"))
+    if total_worktime_m >= 60:
+        total_worktime_h = total_worktime_h + total_worktime_m/60
+        total_worktime_m = total_worktime_m%60
+    #勤務時間の詳細について
+    sum_worktime_h = work.aggregate(Sum('Worktime_h')).get("Worktime_h__sum")
+    sum_worktime_m = work.aggregate(Sum('Worktime_m')).get("Worktime_m__sum")
+    sum_worktime_h_2 = work.aggregate(Sum('Worktime_h_2')).get("Worktime_h_2__sum")
+    sum_worktime_m_2 = work.aggregate(Sum('Worktime_m_2')).get("Worktime_m_2__sum")
+    sum_zangyo_h = work.aggregate(Sum('zangyo_h')).get("zangyo_h__sum")
+    sum_zangyo_m = work.aggregate(Sum('zangyo_m')).get("zangyo_m__sum")
+    if not sum_worktime_h:
+        sum_worktime_h = 0
+    if not sum_worktime_m:
+        sum_worktime_m = 0
+    if not sum_worktime_h_2:
+        sum_worktime_h_2 = 0
+    if not sum_worktime_m_2:
+        sum_worktime_m_2 = 0
+    if not sum_zangyo_h:
+        sum_zangyo_h = 0
+    if not sum_zangyo_m:
+        sum_zangyo_m = 0
+    #時給について
+    wage = work.aggregate(Min('wage')).get("wage__min")
+    wage_2 = work.aggregate(Max('wage')).get("wage__max")
+    wage_zangyo = work.aggregate(Min('zangyo_wage')).get("zangyo_wage__min")
+    if not wage:
+        wage = 0
+    if not wage_2:
+        wage_2 = 0
+    if not wage_zangyo:
+        wage_zangyo = 0
+    #有給について
+    yukyu = Work.objects.filter(Worked_date__year = year.year, Worked_date__month = month.month,user_id=request.user.id,yukyu=True).aggregate(Count('wage')).get("wage__count")
+    return render(
+        request, 
+        'salary/work_data.html', 
+        {
+            'total_worktime_h':total_worktime_h,
+            'total_worktime_m':total_worktime_m,
+            'total_wage':total_wage,
+            'month':month.month,
+            'year':year.year,
+            'sum_worktime_h':sum_worktime_h,
+            'sum_worktime_m':sum_worktime_m,
+            'sum_worktime_h_2':sum_worktime_h_2,
+            'sum_worktime_m_2':sum_worktime_m_2,
+            'sum_zangyo_h':sum_zangyo_h,
+            'sum_zangyo_m':sum_zangyo_m,
+            'wage':wage,
+            'wage_2':wage_2,
+            'wage_zangyo':wage_zangyo,
+            'yukyu':yukyu,
         }
     )
 
@@ -278,7 +368,8 @@ class Delete(DeleteView):
 
 def wagelist(request):
     wage=Wage.objects.filter(user_id=request.user.id)
-    return render(request, 'salary/wage_list.html', {"wage":wage})
+    zangyo=Zangyo.objects.get(user_id=request.user.id).name
+    return render(request, 'salary/wage_list.html', {"wage":wage,"zangyo":zangyo})
 
 class Updatewage(UpdateView):
     model = Wage

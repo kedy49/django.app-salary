@@ -59,6 +59,16 @@ class Work(models.Model):
         verbose_name="途中で時給が変わる場合の勤務時間 (分) ※空欄可",
     )
 
+    total_worktime_h = models.PositiveIntegerField(
+        editable=False,
+        verbose_name="一日の勤務時間(時間)",
+    )
+
+    total_worktime_m = models.PositiveIntegerField(
+        editable=False,
+        verbose_name="一日の勤務時間(分)",
+    )
+
     wage_2 = models.PositiveIntegerField(
         blank = True,
         null = True,
@@ -86,6 +96,11 @@ class Work(models.Model):
         verbose_name = "残業時間（分）※空欄可",
     )
 
+    zangyo_wage = models.PositiveIntegerField(
+        verbose_name="残業時給",
+        editable=False,
+    )
+
     user = models.ForeignKey(
         get_user_model(), 
         verbose_name='ログインユーザー', 
@@ -96,15 +111,41 @@ class Work(models.Model):
         return self.Worked_date.strftime("%Y/%m/%d")
 
     def save(self,*args,**kwargs):
-        wage_sum = self.Worktime_h*self.wage+self.Worktime_m*self.wage/60
-        if not self.wage_2:
-            self.total_wage = wage_sum
+        if self.Worktime_h_2 == None:
+            self.Worktime_h_2 = 0
+        if self.Worktime_m_2 == None:
+            self.Worktime_m_2 = 0
+        if self.zangyo_h==None:
+            self.zangyo_h=0
+        if self.zangyo_m==None:
+            self.zangyo_m=0
+
+        wage_sum_1 = self.Worktime_h*self.wage+self.Worktime_m*self.wage/60
+        if self.wage_2:
+            wage_sum_2 = self.wage_2*self.Worktime_h_2+self.Worktime_m_2*self.wage_2/60
+        wage_sum_3 = Zangyo.objects.get(user_id=self.user).name*self.zangyo_h+self.zangyo_m*Zangyo.objects.get(user_id=self.user).name/60
+
+        if not self.Worktime_h_2 and not self.Worktime_m_2:
+            if not self.zangyo_h and not self.zangyo_m:
+                self.total_worktime_h=self.Worktime_h
+                self.total_worktime_m=self.Worktime_m
+                self.total_wage = wage_sum_1
+            else:
+                self.total_worktime_h=self.Worktime_h+self.zangyo_h
+                self.total_worktime_m=self.Worktime_m+self.zangyo_m
+                self.total_wage = wage_sum_1+wage_sum_3
         else:
-            if self.Worktime_h_2 == None:
-                self.Worktime_h_2 = 0
-            if self.Worktime_m_2 == None:
-                self.Worktime_m_2 = 0
-            self.total_wage = wage_sum+self.Worktime_h_2*self.wage_2+self.Worktime_m_2*self.wage_2/60
+            if not self.zangyo_h and not self.zangyo_m:
+                self.total_worktime_h=self.Worktime_h+self.Worktime_h_2
+                self.total_worktime_m=self.Worktime_m+self.Worktime_m_2
+                self.total_wage = wage_sum_1+wage_sum_2
+            else:
+                self.total_worktime_h=self.Worktime_h+self.Worktime_h_2+self.zangyo_h
+                self.total_worktime_m=self.Worktime_m+self.Worktime_m_2+self.zangyo_m
+                self.total_wage = wage_sum_1+wage_sum_2+wage_sum_3
+
+        self.zangyo_wage=Zangyo.objects.get(user_id=self.user).name
+
         super().save(*args,**kwargs)
         
 

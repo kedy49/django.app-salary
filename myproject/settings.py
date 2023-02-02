@@ -166,3 +166,5 @@ LOGGING = {
         }
     }
 }
+
+NUMBER_GROUPING = 3  #数字を3桁でカンマ区切りにする
