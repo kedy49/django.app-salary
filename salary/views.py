@@ -264,7 +264,7 @@ def data(request):
         sum_zangyo_m = 0
     #時給について
     wage = work.aggregate(Min('wage')).get("wage__min")
-    wage_2 = work.aggregate(Max('wage')).get("wage__max")
+    wage_2 = work.aggregate(Max('wage_2')).get("wage_2__max")
     wage_zangyo = work.aggregate(Min('zangyo_wage')).get("zangyo_wage__min")
     if not wage:
         wage = 0
